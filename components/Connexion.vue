@@ -1,0 +1,167 @@
+<template>
+  <v-dialog
+    width="500"
+    class="ma-0"
+    :model-value="modelValue"
+    :persistent="loading !== null"
+    @update:model-value="emits('update:modelValue', $event)"
+  >
+    <v-card>
+      <v-card-title class="d-flex align-center">
+        <h2 class="text-h5 mr-auto">
+          Mon compte
+        </h2>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          :disabled="loading !== null"
+          @click="emits('update:modelValue', false)"
+        />
+      </v-card-title>
+      <v-card-text>
+        <v-form ref="form" @submit.prevent="login">
+          <InputsEmail v-model="email" variant="outlined" icon />
+          <template v-if="!forgotPassword">
+            <InputsUsername v-if="createAccount" v-model="username" variant="outlined" icon />
+            <InputsPassword v-if="!createAccount" v-model="password" variant="outlined" />
+            <InputsPasswordFirst v-else v-model="password" variant="outlined" not-in-line />
+          </template>
+
+          <v-btn v-if="!createAccount" class="mb-2" variant="text" @click="forgotPassword = !forgotPassword">
+            {{ forgotPassword ? 'Connexion' : 'Mot de passe oublié' }}
+          </v-btn>
+
+          <v-btn
+            block
+            color="buttonBack"
+            type="submit"
+            :disabled="loading !== null && loading !== 'email'"
+            :loading="loading === 'email'"
+          >
+            {{ createAccount ? "M'inscire" : forgotPassword ? 'Réinitialiser mon mot de passe' : 'Connexion' }}
+          </v-btn>
+        </v-form>
+      </v-card-text>
+      <v-divider />
+      <template v-if="!createAccount">
+        <v-card-title>
+          <h2 class="text-h5">
+            Nouvel arrivant
+          </h2>
+        </v-card-title>
+        <v-card-text class="text-center">
+          <span>N'attends plus et rejoint le club</span>
+          <v-btn class="mt-2" color="buttonBack" block :disabled="loading !== null" @click="createAccount = true">
+            Créer un compte
+          </v-btn>
+        </v-card-text>
+      </template>
+      <template v-else>
+        <v-card-title>
+          <h2 class="text-h5">
+            Déjà membre
+          </h2>
+        </v-card-title>
+        <v-card-text class="text-center">
+          <span>Connectes toi pour rentrer dans le club</span>
+          <v-btn class="mt-2" color="buttonBack" block :disabled="loading !== null" @click="createAccount = false">
+            Connexion
+          </v-btn>
+        </v-card-text>
+      </template>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script lang="ts" setup>
+import { VForm } from 'vuetify/components'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  AuthErrorCodes
+} from 'firebase/auth'
+import { FirebaseError } from '@firebase/util'
+import { Timestamp, doc, setDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+import { userConverter } from '~/stores'
+
+const { $notifier } = useNuxtApp()
+const db = useFirestore()
+
+defineProps<{
+  modelValue: boolean
+}>()
+
+const emits = defineEmits<{(e: 'update:modelValue', value: boolean): void }>()
+
+const email = ref('')
+const username = ref('')
+const password = ref('')
+const date = ref(new Date(Date.now()))
+const createAccount = ref(false)
+const forgotPassword = ref(false)
+const loading = ref<'email' | null>(null)
+const form = ref<VForm>()
+
+async function login () {
+  if (!(await form.value?.validate())?.valid) {
+    return
+  }
+  loading.value = 'email'
+  const auth = useFirebaseAuth()!
+  try {
+    if (createAccount.value) {
+      createUserWithEmailAndPassword(auth, email.value, password.value).then((credentials) => {
+        const userRef = doc(db, 'users', credentials.user.uid).withConverter(userConverter)
+        setDoc(
+          userRef,
+          {
+            id: credentials.user.uid,
+            email: email.value,
+            username: username.value,
+            creationDate: Timestamp.fromDate(date.value),
+            updateDate: Timestamp.now()
+          },
+          { merge: true }
+        )
+      })
+      $notifier({ content: 'Inscription réussie', color: 'success' })
+    } else if (forgotPassword.value) {
+      await sendPasswordResetEmail(auth, email.value)
+      $notifier({
+        content: 'Un email de réinitialisation a été envoyé',
+        color: 'success'
+      })
+      forgotPassword.value = false
+    } else {
+      await signInWithEmailAndPassword(auth, email.value, password.value)
+      $notifier({ content: 'Connexion réussie', color: 'success' })
+    }
+    emits('update:modelValue', false)
+  } catch (error: unknown) {
+    if (!(error instanceof FirebaseError)) {
+      throw error
+    }
+
+    let errMessage
+    switch (error.code) {
+      case AuthErrorCodes.EMAIL_EXISTS:
+        errMessage = 'Adresse mail déjà utilisée'
+        break
+      case AuthErrorCodes.USER_DELETED:
+        errMessage = 'Utilisateur supprimé'
+        break
+      case AuthErrorCodes.INVALID_PASSWORD:
+        errMessage = 'Mot de passe incorrect'
+        break
+      default:
+        errMessage = 'une erreur est survenue'
+        break
+    }
+    $notifier({ content: errMessage, color: 'error', error })
+  } finally {
+    loading.value = null
+  }
+}
+</script>

@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Noto Sans');
+@import url('https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap');
+$font-family: 'Tilt Neon', cursive;
+
+.v-application {
+  [class*='text-'] {
+    font-family: $font-family, sans-serif !important;
+  }
+  font-family: $font-family, sans-serif !important;
+}

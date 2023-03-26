@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
+  "extends": [
+    "plugin:prettier/recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "@nuxtjs/eslint-config-typescript"
+  ],
+  "ignorePatterns": ["functions"],
+  "plugins": ["vue", "@typescript-eslint"],
+  "rules": {
+    "prettier/prettier": "off",
+    "vue/no-multiple-objects-in-class": "error",
+    "vue/no-potential-component-option-typo": ["error", {"presets": ["nuxt"]}],
+    "vue/no-static-inline-styles": ["error", {"allowBinding": true}],
+    "vue/no-useless-mustaches": ["error"],
+    "vue/multi-word-component-names": "off",
+    "vue/valid-v-slot": "off",
+    "vue/block-lang": ["error", {"script": {"lang": "ts"}}],
+    "vue/component-api-style": ["error", ["script-setup"]],
+    "vue/no-v-for-template-key": "off"
+  }
+}
