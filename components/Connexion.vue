@@ -22,7 +22,6 @@
         <v-form ref="form" @submit.prevent="login">
           <InputsEmail v-model="email" variant="outlined" icon />
           <template v-if="!forgotPassword">
-            <InputsUsername v-if="createAccount" v-model="username" variant="outlined" icon />
             <InputsPassword v-if="!createAccount" v-model="password" variant="outlined" />
             <InputsPasswordFirst v-else v-model="password" variant="outlined" not-in-line />
           </template>
@@ -79,7 +78,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
-  AuthErrorCodes
+  AuthErrorCodes,
+  getIdTokenResult,
+  ParsedToken
 } from 'firebase/auth'
 import { FirebaseError } from '@firebase/util'
 import { Timestamp, doc, setDoc } from 'firebase/firestore'
@@ -96,13 +97,23 @@ defineProps<{
 const emits = defineEmits<{(e: 'update:modelValue', value: boolean): void }>()
 
 const email = ref('')
-const username = ref('')
 const password = ref('')
+const userClaims = ref<null|ParsedToken>(null)
 const date = ref(new Date(Date.now()))
 const createAccount = ref(false)
 const forgotPassword = ref(false)
 const loading = ref<'email' | null>(null)
 const form = ref<VForm>()
+
+onBeforeMount(() => {
+  const auth = useFirebaseAuth()!
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      const { claims } = await getIdTokenResult(user, true)
+      userClaims.value = claims
+    }
+  })
+})
 
 async function login () {
   if (!(await form.value?.validate())?.valid) {
@@ -119,7 +130,6 @@ async function login () {
           {
             id: credentials.user.uid,
             email: email.value,
-            username: username.value,
             creationDate: Timestamp.fromDate(date.value),
             updateDate: Timestamp.now()
           },
@@ -136,7 +146,11 @@ async function login () {
       forgotPassword.value = false
     } else {
       await signInWithEmailAndPassword(auth, email.value, password.value)
-      $notifier({ content: 'Connexion réussie', color: 'success' })
+      await getIdTokenResult(auth.currentUser!, true)
+      if (userClaims.value?.admin) {
+        navigateTo('/admin')
+      }
+      // $notifier({ content: 'Connexion réussie', color: 'success' })
     }
     emits('update:modelValue', false)
   } catch (error: unknown) {

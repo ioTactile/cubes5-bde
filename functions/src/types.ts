@@ -16,7 +16,11 @@ export const userConverter = {
 export type User = {
     id: string
     email: string
-    username: string
+    admin: boolean
     creationDate: Timestamp
     updateDate: Timestamp
+    firstName?: string
+    lastName?: string
+    basket?: Record<string, number>
+    wishList?: string[]
   }

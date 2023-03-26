@@ -21,10 +21,10 @@ export default defineNuxtConfig({
         projectId: 'cubes5-bde-fbfeb'
       }
     }
+  },
+  nitro: {
+    prerender: {
+      routes: ['/', 'boutique', 'boutique/[id]']
+    }
   }
-  // nitro: {
-  //   prerender: {
-  //     routes: ['/', 'products', 'products/[id]']
-  //   }
-  // }
 })
