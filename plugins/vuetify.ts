@@ -8,17 +8,17 @@ const myTheme: ThemeDefinition = {
   dark: false,
   colors: {
     // Illustration
-    main: '#fffffe', // white
-    secondary: '#e3f6f5', // light blue
-    tertiary: '#bae8e8', // light blue
-    stroke: '#272343', // dark blue
-    highlight: '#ffd803', // yellow
+    main: '#f2f7f5', // white
+    secondary: '#ffa8ba', // light pink
+    tertiary: '#fa5246', // red
+    stroke: '#00473e', // dark green
+    highlight: '#faae2b', // yellow
     // Elements
-    background: '#fffffe', // white
-    headline: '#272343', // dark blue
-    paragraph: '#2d334a', // dark grey
-    buttonBack: '#ffd803', // yellow
-    buttonText: '#272343', // dark blue
+    background: '#f2f7f5', // white
+    headline: '#00473e', // dark green
+    paragraph: '#475d5b', // dark grey
+    buttonBack: '#faae2b', // yellow
+    buttonText: '#00473e', // dark green
     // Events
     error: '#ed4337', // red
     success: '#4caf50' // green
