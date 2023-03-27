@@ -17,14 +17,7 @@ export default defineNuxtConfig({
       measurementId: 'G-420TF53Z71'
     },
     admin: {
-      serviceAccount: {
-        projectId: 'cubes5-bde-fbfeb'
-      }
-    }
-  },
-  nitro: {
-    prerender: {
-      routes: ['/', 'boutique', 'boutique/[id]']
+      serviceAccount: process.env.ADMIN_CREDENTIALS
     }
   }
 })

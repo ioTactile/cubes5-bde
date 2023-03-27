@@ -7,3 +7,9 @@ $font-family: 'Comfortaa', cursive;
   }
   font-family: $font-family, sans-serif !important;
 }
+
+body {
+  max-width: 1920px;
+  margin: 0 auto;
+  background-color: #f2f7f5;
+}
