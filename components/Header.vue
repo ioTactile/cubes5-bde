@@ -21,8 +21,17 @@
         </v-btn>
       </div>
       <div v-if="admin">
-        <v-btn variant="text" to="/admin" density="compact">
-          Admin
+        <v-btn variant="text" to="/admin/produits">
+          Produits
+        </v-btn>
+        <v-btn variant="text" to="/admin/stocks">
+          Stocks
+        </v-btn>
+        <v-btn variant="text" to="/admin/statistiques">
+          Statistiques
+        </v-btn>
+        <v-btn variant="text" to="/admin/utilisateurs">
+          Utilisateurs
         </v-btn>
       </div>
       <v-btn icon="mdi-account" size="large" @click="isLogin('/profil')" />

@@ -12,15 +12,15 @@
 </template>
 
 <script lang="ts" setup>
-import { getIdTokenResult } from '@firebase/auth'
+// import { getIdTokenResult } from '@firebase/auth'
 
 onBeforeMount(async () => {
   const auth = useFirebaseAuth()!
   await new Promise((resolve) => {
     auth.onAuthStateChanged(async (user) => {
       if (!user) { return resolve(await navigateTo('/')) }
-      const { claims } = await getIdTokenResult(user, true)
-      if (!claims.admin) { return resolve(await navigateTo('/')) }
+      // const { claims } = await getIdTokenResult(user, true)
+      // if (!claims.admin) { return resolve(await navigateTo('/')) }
       return resolve(null)
     })
   })

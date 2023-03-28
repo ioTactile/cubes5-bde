@@ -11,7 +11,7 @@
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>
-  
+
 <script lang="ts" setup>
 withDefaults(defineProps<{
   modelValue?: string,
@@ -33,4 +33,3 @@ const rules = [
   (v?: string) => (v && /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/.test(v)) || "L'adresse email doit être valide"
 ]
 </script>
-  

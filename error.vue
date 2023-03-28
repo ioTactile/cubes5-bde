@@ -1,17 +1,16 @@
 <template>
-  <v-app id="inspire">
+  <v-app>
     <v-main>
-      <v-container fill-height fluid>
+      <v-container>
         <div class="text-center text-buttonBack">
           <h1 v-if="props.error.statusCode === 404">
             Erreur {{ props.error.statusCode }}
           </h1>
           <h2>Une erreur est survenue lors du chargement de la page</h2>
           <v-btn
-            :variant="btnOutlined ? 'outlined' : undefined"
             color="buttonBack"
             to="/"
-            class="mt-5"
+            class="mt-4"
             @mouseover="btnOutlined = false"
             @mouseleave="btnOutlined = true"
           >
@@ -40,4 +39,3 @@ useHead({
   title: props.error.statusCode === 404 ? 'Page introuvable' : 'Une erreur est survenue'
 })
 </script>
-

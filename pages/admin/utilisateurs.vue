@@ -10,14 +10,14 @@
       <thead>
         <tr>
           <th>E-mail</th>
-          <th> Admin </th>
+          <th> Role </th>
           <th />
         </tr>
       </thead>
       <tbody>
         <tr v-for="user in users" :key="user.id">
           <td>{{ user.email }}</td>
-          <td>{{ user.admin ? 'Oui' : 'Non' }}</td>
+          <td>{{ getRole(user.role) }}</td>
           <td class="text-right">
             <v-btn
               icon="mdi-delete"
@@ -35,7 +35,7 @@
     <v-dialog v-model="dialog" width="450" :persistent="loading">
       <v-card>
         <v-form ref="form" @submit.prevent="createUser">
-          <v-card-title>
+          <v-card-title class="d-flex align-center">
             Création d'un nouvel admin
             <v-spacer />
             <v-btn icon="mdi-close" variant="text" :disabled="loading" @click="dialog = false" />
@@ -43,12 +43,13 @@
           <v-card-text>
             <InputsEmail v-model="email" variant="outlined" icon />
             <InputsPasswordFirst v-model="password" variant="outlined" not-in-line />
+            <v-checkbox v-model="role" label="Ajouter comme admin" value="admin" hide-details />
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions justify="end" class="mr-2">
             <v-btn variant="text" :disabled="loading" @click="dialog = false">
               Annuler
             </v-btn>
-            <v-btn color="buttonBack" :loading="loading" type="submit">
+            <v-btn color="buttonBack" variant="outlined" :loading="loading" type="submit">
               Ajouter
             </v-btn>
           </v-card-actions>
@@ -58,36 +59,40 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" async setup>
 import { VForm } from 'vuetify/components'
 import { collection, getDocs } from 'firebase/firestore'
-import { httpsCallable } from 'firebase/functions'
-import { userConverter } from '~/stores'
+import { useFirebaseFunctions } from '~/composables/useFirebaseFunctions'
+import { userConverter, LocalUserType } from '~/stores'
 
 definePageMeta({ layout: 'admin' })
+
+const db = useFirestore()
+const functions = useFirebaseFunctions()
 
 const dialog = ref(false)
 const email = ref<string>()
 const password = ref<string>()
+const role = ref<'admin'|null>(null)
 const loading = ref(false)
 const removing = ref<string|null>(null)
 const form = ref<VForm>()
 
-const db = useFirestore()
 const usersRef = collection(db, 'users').withConverter(userConverter)
 const usersDocs = await getDocs(usersRef)
 const users = ref(usersDocs.docs.map(doc => doc.data()))
 
-const createUser = async () => {
-  if (!(await form.value?.validate())?.valid) { return }
+async function createUser () {
+  if (!(await form.value?.validate())?.valid || !email.value || !password.value) { return }
   loading.value = true
 
   try {
-    const { data } = await httpsCallable<{email: string, password: string, isAdmin: boolean}>('createAdmin')({
+    const { data } = await functions<{email: string, password: string, role: {admin: true}}, LocalUserType>('createAdmin')({
       email: email.value,
       password: password.value,
-      isAdmin: true
+      role: { admin: true }
     })
+
     users.value.push(data)
     dialog.value = false
   } finally {
@@ -95,14 +100,19 @@ const createUser = async () => {
   }
 }
 
-const removeUser = async (id: string) => {
+async function removeUser (id: string) {
   removing.value = id
 
   try {
-    await httpsCallable($functions, 'removeAdmin')({ id })
-    users.value = await getUsers()
+    await functions('removeAdmin')({ id })
+    users.value = users.value.filter(user => user.id !== id)
   } finally {
     removing.value = null
   }
+}
+
+function getRole (role: { admin: true} | undefined) {
+  if (!role) { return 'Utilisateur' }
+  if (role.admin) { return 'Admin' }
 }
 </script>

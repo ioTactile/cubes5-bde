@@ -1,11 +1,11 @@
 import * as functions from "firebase-functions";
-import {getFirestore} from "firebase-admin/firestore";
+import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {getAuth} from "firebase-admin/auth";
 
 export type Data = {
     email: string,
     password: string,
-    isAdmin: boolean
+    role: unknown
 }
 
 export const createAdmin = functions
@@ -15,7 +15,7 @@ export const createAdmin = functions
         throw new functions.https.HttpsError(
             "unauthenticated", "Une authentification est nécessaire");
       }
-      if (!data.email || !data.password || !data.isAdmin) {
+      if (!data.email || !data.password || !data.role) {
         throw new functions.https
             .HttpsError("invalid-argument", "Paramètres incorrect");
       }
@@ -27,13 +27,15 @@ export const createAdmin = functions
         email: data.email,
         password: data.password,
       });
-      await auth.setCustomUserClaims(user.uid, {admin: data.isAdmin});
+      await auth.setCustomUserClaims(user.uid, data.role);
 
+      const date = new Date(Date.now());
       const newUser = {
         id: user.uid,
         email: data.email,
-        password: data.password,
-        admin: data.isAdmin,
+        role: data.role,
+        creationDate: Timestamp.fromDate(date),
+        updateDate: Timestamp.now(),
       };
       await firestore
           .collection("users").doc(user.uid).set(newUser, {merge: true});
