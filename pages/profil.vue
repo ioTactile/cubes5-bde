@@ -17,7 +17,7 @@
       <v-col cols="12" md="9">
         <v-window v-model="tab">
           <v-window-item value="profil">
-            <v-card>
+            <v-card rounded="0">
               <v-card-title class="d-flex justify-space-between align-center">
                 <h2 class="text-h5">
                   Mon profil
