@@ -6,6 +6,11 @@ import {
 
 export {Timestamp};
 
+export type Image = {
+  name: string
+  url: string
+};
+
 export const userConverter = {
   toFirestore: (user: User): DocumentData => user,
   fromFirestore(snapshot: QueryDocumentSnapshot<User>): User {
@@ -38,7 +43,7 @@ export type Product = {
     description: string
     price: number
     quantity: number
-    image: string
+    image?: Image
     category: string
     slug: string
     soldNb: number

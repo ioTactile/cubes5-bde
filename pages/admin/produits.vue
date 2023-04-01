@@ -1,11 +1,18 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="6" sm="3">
+      <v-col cols="6" sm="5" md="3">
         <v-btn color="buttonBack" height="56" block class="mb-16" @click="createProduct">
           Ajouter un produit
         </v-btn>
-        <v-select v-model="sortBy" variant="outlined" clearable label="Trier par" :items="sorting" />
+        <v-select
+          v-model="sortBy"
+          bg-color="headline"
+          variant="outlined"
+          clearable
+          label="Trier par"
+          :items="sorting"
+        />
         <div class="mt-10">
           <span color="headline" class="text-h5">Filtrer par</span>
           <v-divider class="my-4" />
@@ -48,15 +55,15 @@
           </v-expansion-panels>
         </div>
       </v-col>
-      <v-col cols="6" sm="9">
+      <v-col cols="6" sm="7" md="9">
         <v-row no-gutters justify="center">
-          <v-vol
-            v-for="productItem in products"
+          <v-col
+            v-for="productItem in sortedProducts"
             :key="productItem.id"
-            class="ma-1"
+            class="ma-1 d-flex justify-center"
           >
             <AdminProductTemplate :product="productItem" @edit="edit(productItem)" />
-          </v-vol>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -73,15 +80,15 @@
             <v-text-field v-model="name" label="Nom" variant="outlined" />
             <InputsNumber v-model="price" label="Prix" variant="outlined" append-icon="mdi-currency-eur" />
             <InputsQuantity v-model="quantity" label="Quantité" variant="outlined" />
-            <v-text-field v-model="image" label="Image URL" variant="outlined" />
-            <!-- <v-file-input
+            <!-- <v-text-field v-model="image" label="Image URL" variant="outlined" /> -->
+            <v-file-input
               v-model="image"
               accept="image/png, image/jpeg, image/bmp"
               placeholder="Selectionne une image"
               label="Image"
               show-size
               variant="outlined"
-            /> -->
+            />
             <v-select v-model="category" label="Catégorie" :items="categories" variant="outlined" />
             <v-textarea v-model="description" label="Description" variant="outlined" auto-grow />
           </v-card-text>
@@ -101,16 +108,16 @@
 
 <script lang="ts" setup>
 import slugify from 'slugify'
-import { Timestamp, collection, doc, getDocs, setDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore'
-// import { uploadBytesResumable, getDownloadURL, ref as storageRef, deleteObject } from 'firebase/storage'
-// import { useFirebaseStorage } from 'vuefire'
+import { Timestamp, collection, doc, getDocs, setDoc, deleteDoc, query, where } from 'firebase/firestore'
+import { ref as storageRef, deleteObject, getDownloadURL } from 'firebase/storage'
+import { useFirebaseStorage, useStorageFile } from 'vuefire'
 import { VForm } from 'vuetify/components'
 import { productConverter, LocalProductType } from '~/stores'
 
 definePageMeta({ layout: 'admin' })
 
 const db = useFirestore()
-// const storage = useFirebaseStorage()
+const storage = useFirebaseStorage()
 
 const dialog = ref(false)
 const sortBy = ref<string|null>(null)
@@ -120,13 +127,12 @@ const name = ref<string>()
 const price = ref<number>()
 const quantity = ref<number>()
 const description = ref<string>()
-const image = ref<string>()
+const image = ref<File[]>([])
 const category = ref<string>()
 const loading = ref(false)
 const form = ref<VForm>()
 const creationDate = ref(new Date(Date.now()))
 const categories = ref([
-  { value: 'tout', title: 'Tout' },
   { value: 'bonbons', title: 'Bonbons' },
   { value: 'gateaux', title: 'Gâteaux' },
   { value: 'boisson', title: 'Boisson' }
@@ -143,34 +149,45 @@ const sorting = ref([
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 async function getProducts () {
-  let productsRefQ = productsRef
+  let productsRefQ = query(productsRef)
   if (selectedCategory.value && selectedCategory.value !== 'tout') {
     productsRefQ = query(productsRef, where('category', '==', selectedCategory.value))
-  } else if (selectedCategory.value === 'tout') {
-    productsRefQ = productsRef
   }
-
-  if (sortBy.value === 'priceAsc') {
-    productsRefQ = query(productsRef, orderBy('price', 'asc'))
-  } else if (sortBy.value === 'priceDesc') {
-    productsRefQ = query(productsRef, orderBy('price', 'desc'))
-  } else if (sortBy.value === 'quantity') {
-    productsRefQ = query(productsRef, orderBy('quantity', 'desc'))
-  } else if (sortBy.value === 'nameAsc') {
-    productsRefQ = query(productsRef, orderBy('name', 'asc'))
-  } else if (sortBy.value === 'nameDesc') {
-    productsRefQ = query(productsRef, orderBy('name', 'desc'))
-  } else if (sortBy.value === 'latest') {
-    productsRefQ = query(productsRef, orderBy('creationDate', 'desc'))
-  }
-
   const products = await getDocs(productsRefQ)
   return products.docs.map(doc => doc.data())
 }
 const products = ref(await getProducts())
 
-watch([sortBy, selectedCategory], async () => {
+watch([selectedCategory], async () => {
   products.value = await getProducts()
+})
+
+const sortedProducts = computed(() => {
+  let sorted = [...products.value]
+  switch (sortBy.value) {
+    case 'latest':
+      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
+      break
+    case 'quantity':
+      sorted = sorted.sort((a, b) => b.quantity - a.quantity)
+      break
+    case 'nameAsc':
+      sorted = sorted.sort((a, b) => a.name.localeCompare(b.name))
+      break
+    case 'nameDesc':
+      sorted = sorted.sort((a, b) => b.name.localeCompare(a.name))
+      break
+    case 'priceAsc':
+      sorted = sorted.sort((a, b) => a.price - b.price)
+      break
+    case 'priceDesc':
+      sorted = sorted.sort((a, b) => b.price - a.price)
+      break
+    default:
+      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
+      break
+  }
+  return sorted
 })
 
 function createProduct () {
@@ -183,6 +200,10 @@ async function saveProduct () {
   loading.value = true
   try {
     const productRef = doc(productsRef, id.value)
+    const fileRef = storageRef(storage, `products/${productRef.id}`)
+    const { upload } = useStorageFile(fileRef)
+    const data = image.value[0]
+    await upload(data)
 
     await setDoc(productRef, {
       id: id.value,
@@ -190,42 +211,15 @@ async function saveProduct () {
       price: price.value,
       quantity: quantity.value,
       description: description.value,
-      image: image.value,
+      image: {
+        name: image.value[0].name,
+        url: await getDownloadURL(fileRef)
+      },
       category: category.value,
       slug: slugify(name.value + '-' + productRef.id, { lower: true }),
       creationDate: Timestamp.fromDate(creationDate.value),
       updateDate: Timestamp.now()
     })
-
-    // const fileRef = storageRef(storage, `products/${productRef.id}`)
-    // const uploadTask = uploadBytesResumable(fileRef, image.value)
-    // uploadTask.on('state_changed', (snapshot) => {
-    //   const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-    //   console.log('L\'upload est à' + progress + '% completé')
-    //   switch (snapshot.state) {
-    //     case 'paused':
-    //       console.log('L\'upload est en pause')
-    //       break
-    //     case 'running':
-    //       console.log('L\'upload est en cours')
-    //       break
-    //   }
-    // }, (error) => {
-    //   switch (error.code) {
-    //     case 'storage/unauthorized':
-    //       console.log('L\'utilisateur n\'a pas les permissions nécessaires')
-    //       break
-    //     case 'storage/canceled':
-    //       console.log('L\'utilisateur a annulé l\'upload')
-    //       break
-    //     case 'storage/unknown':
-    //       console.log('Une erreur inconnue est survenue')
-    //       break
-    //   }
-    // }, async () => {
-    //   const url = await getDownloadURL(uploadTask.snapshot.ref)
-    //   await setDoc(productRef, { image: url }, { merge: true })
-    // })
 
     products.value = await getProducts()
   } finally {
@@ -241,8 +235,8 @@ async function deleteProduct () {
     const productRef = doc(productsRef, id.value)
     await deleteDoc(productRef)
 
-    // const imageRef = storageRef(storage, `products/${productRef.id}`)
-    // await deleteObject(imageRef)
+    const imageRef = storageRef(storage, `products/${productRef.id}`)
+    await deleteObject(imageRef)
 
     products.value = await getProducts()
   } finally {
@@ -268,7 +262,7 @@ function reset () {
   price.value = 0
   quantity.value = 0
   description.value = ''
-  image.value = ''
+  image.value = []
   category.value = ''
   creationDate.value = new Date(Date.now())
   loading.value = false

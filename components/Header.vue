@@ -1,10 +1,10 @@
 <template>
   <div>
     <v-app-bar color="background" elevation="0" height="80">
-      <v-app-bar-nav-icon v-if="xs" class="mr-4" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="xs || (admin && adminUser && !mdAndUp)" class="mr-md-4" @click.stop="drawer = !drawer" />
       <v-spacer class="d-block d-sm-none" />
       <NuxtLink to="/" class="text-decoration-none">
-        <v-app-bar-title class="font-weight-bold text-headline text-h4 ml-sm-12" tag="h1">
+        <v-app-bar-title class="font-weight-bold text-headline text-sm-h5 text-md-h4 ml-sm-12" tag="h1">
           Les délices du campus
         </v-app-bar-title>
       </NuxtLink>
@@ -20,7 +20,10 @@
           Me contacter
         </v-btn>
       </div>
-      <div v-if="admin">
+      <div v-if="mdAndUp && admin && adminUser" class="text-center">
+        <v-btn variant="text" to="/admin/commandes">
+          Commandes
+        </v-btn>
         <v-btn variant="text" to="/admin/produits">
           Produits
         </v-btn>
@@ -40,9 +43,21 @@
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" disable-resize-watcher width="200">
-      <v-list nav class="pa-0">
+      <v-list v-if="!admin" nav class="pa-0">
         <v-list-item
           v-for="(item, i) in items"
+          :key="i"
+          :value="item"
+          :to="item.link"
+          active-color="paragraph"
+          class="text-center"
+        >
+          {{ item.title }}
+        </v-list-item>
+      </v-list>
+      <v-list v-if="admin && adminUser" nav class="pa-0">
+        <v-list-item
+          v-for="(item, i) in adminItems"
           :key="i"
           :value="item"
           :to="item.link"
@@ -88,7 +103,7 @@ const db = useFirestore()
 const user = useCurrentUser()
 const basketStore = useBasketStore()
 const { basket } = storeToRefs(basketStore)
-const { xs } = useDisplay()
+const { xs, mdAndUp } = useDisplay()
 
 const login = ref(false)
 const adminUser = ref(false)
@@ -110,6 +125,29 @@ const items = [
   {
     title: 'Contact',
     link: '/contact'
+  }
+]
+
+const adminItems = [
+  {
+    title: 'Commandes',
+    link: '/admin/commandes'
+  },
+  {
+    title: 'Produits',
+    link: '/admin/produits'
+  },
+  {
+    title: 'Stocks',
+    link: '/admin/stocks'
+  },
+  {
+    title: 'Statistiques',
+    link: '/admin/statistiques'
+  },
+  {
+    title: 'Utilisateurs',
+    link: '/admin/utilisateurs'
   }
 ]
 

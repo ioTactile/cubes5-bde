@@ -84,11 +84,13 @@ import {
 } from 'firebase/auth'
 import { FirebaseError } from '@firebase/util'
 import { Timestamp, doc, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore, useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { userConverter } from '~/stores'
 
 const { $notifier } = useNuxtApp()
 const db = useFirestore()
+const user = useCurrentUser()
+const auth = useFirebaseAuth()
 
 defineProps<{
   modelValue: boolean
@@ -105,22 +107,16 @@ const forgotPassword = ref(false)
 const loading = ref<'email' | null>(null)
 const form = ref<VForm>()
 
-onBeforeMount(() => {
-  const auth = useFirebaseAuth()!
-  auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      const { claims } = await getIdTokenResult(user, true)
-      userClaims.value = claims
-    }
-  })
+onBeforeMount(async () => {
+  if (user.value) {
+    const { claims } = await getIdTokenResult(user.value, true)
+    userClaims.value = claims
+  }
 })
 
 async function login () {
-  if (!(await form.value?.validate())?.valid) {
-    return
-  }
+  if (!auth || !(await form.value?.validate())?.valid) { return }
   loading.value = 'email'
-  const auth = useFirebaseAuth()!
   try {
     if (createAccount.value) {
       createUserWithEmailAndPassword(auth, email.value, password.value).then((credentials) => {
@@ -145,12 +141,11 @@ async function login () {
       })
       forgotPassword.value = false
     } else {
-      await signInWithEmailAndPassword(auth, email.value, password.value)
-      await getIdTokenResult(auth.currentUser!, true)
-      if (userClaims.value?.admin) {
+      const userCredentials = await signInWithEmailAndPassword(auth, email.value, password.value)
+      const { claims } = await getIdTokenResult(userCredentials.user, true)
+      if (claims.admin) {
         navigateTo('/admin')
       }
-      // $notifier({ content: 'Connexion réussie', color: 'success' })
     }
     emits('update:modelValue', false)
   } catch (error: unknown) {

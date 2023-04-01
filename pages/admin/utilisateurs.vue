@@ -6,7 +6,7 @@
       </v-btn>
     </div>
 
-    <v-table class="mt-4">
+    <v-table class="mt-4" height="60vh">
       <thead>
         <tr>
           <th>E-mail</th>

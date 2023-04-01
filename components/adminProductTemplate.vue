@@ -7,7 +7,7 @@
     rounded="0"
     @click="emits('edit')"
   >
-    <v-img :src="product.image" height="150px" class="mt-2" />
+    <v-img :src="product.image?.url" height="150px" class="mt-2" />
     <h3 class="text-center mx-2 mt-4 text-headline">
       {{ product.name }}
     </h3>
