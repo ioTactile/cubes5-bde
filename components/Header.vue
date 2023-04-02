@@ -9,7 +9,7 @@
         </v-app-bar-title>
       </NuxtLink>
       <v-spacer />
-      <div v-if="!admin">
+      <div v-if="mdAndUp && !admin">
         <v-btn variant="text" to="/boutique" density="compact">
           Boutique
         </v-btn>
