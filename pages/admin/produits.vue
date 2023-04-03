@@ -2,7 +2,13 @@
   <div>
     <v-row>
       <v-col cols="6" sm="5" md="3">
-        <v-btn color="buttonBack" height="56" block class="mb-16" @click="createProduct">
+        <v-btn
+          color="buttonBack"
+          height="56"
+          block
+          class="mb-16"
+          @click="createProduct"
+        >
           Ajouter un produit
         </v-btn>
         <v-select
@@ -18,7 +24,11 @@
           <v-divider class="my-4" />
           <v-expansion-panels>
             <v-expansion-panel bg-color="main" elevation="0">
-              <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus" color="headline">
+              <v-expansion-panel-title
+                expand-icon="mdi-plus"
+                collapse-icon="mdi-minus"
+                color="headline"
+              >
                 Catégories
               </v-expansion-panel-title>
               <v-expansion-panel-text>
@@ -37,7 +47,11 @@
           <v-divider class="my-4" />
           <v-expansion-panels>
             <v-expansion-panel bg-color="main" elevation="0">
-              <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus" color="headline">
+              <v-expansion-panel-title
+                expand-icon="mdi-plus"
+                collapse-icon="mdi-minus"
+                color="headline"
+              >
                 Prix
               </v-expansion-panel-title>
               <v-expansion-panel-text>
@@ -62,7 +76,10 @@
             :key="productItem.id"
             class="ma-1 d-flex justify-center"
           >
-            <AdminProductTemplate :product="productItem" @edit="edit(productItem)" />
+            <AdminProductTemplate
+              :product="productItem"
+              @edit="edit(productItem)"
+            />
           </v-col>
         </v-row>
       </v-col>
@@ -78,8 +95,17 @@
           </v-card-title>
           <v-card-text>
             <v-text-field v-model="name" label="Nom" variant="outlined" />
-            <InputsNumber v-model="price" label="Prix" variant="outlined" append-icon="mdi-currency-eur" />
-            <InputsQuantity v-model="quantity" label="Quantité" variant="outlined" />
+            <InputsNumber
+              v-model="price"
+              label="Prix"
+              variant="outlined"
+              append-icon="mdi-currency-eur"
+            />
+            <InputsQuantity
+              v-model="quantity"
+              label="Quantité"
+              variant="outlined"
+            />
             <!-- <v-text-field v-model="image" label="Image URL" variant="outlined" /> -->
             <v-file-input
               v-model="image"
@@ -89,8 +115,18 @@
               show-size
               variant="outlined"
             />
-            <v-select v-model="category" label="Catégorie" :items="categories" variant="outlined" />
-            <v-textarea v-model="description" label="Description" variant="outlined" auto-grow />
+            <v-select
+              v-model="category"
+              label="Catégorie"
+              :items="categories"
+              variant="outlined"
+            />
+            <v-textarea
+              v-model="description"
+              label="Description"
+              variant="outlined"
+              auto-grow
+            />
           </v-card-text>
           <v-card-actions justify="end" class="mr-2">
             <v-btn variant="text" color="error" @click="deleteProduct">
@@ -108,8 +144,21 @@
 
 <script lang="ts" setup>
 import slugify from 'slugify'
-import { Timestamp, collection, doc, getDocs, setDoc, deleteDoc, query, where } from 'firebase/firestore'
-import { ref as storageRef, deleteObject, getDownloadURL } from 'firebase/storage'
+import {
+  Timestamp,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  query,
+  where
+} from 'firebase/firestore'
+import {
+  ref as storageRef,
+  deleteObject,
+  getDownloadURL
+} from 'firebase/storage'
 import { useFirebaseStorage, useStorageFile } from 'vuefire'
 import { VForm } from 'vuetify/components'
 import { productConverter, LocalProductType } from '~/stores'
@@ -120,9 +169,9 @@ const db = useFirestore()
 const storage = useFirebaseStorage()
 
 const dialog = ref(false)
-const sortBy = ref<string|null>(null)
-const selectedCategory = ref<string|null>(null)
-const id = ref<string|null>(null)
+const sortBy = ref<string | null>(null)
+const selectedCategory = ref<string | null>(null)
+const id = ref<string | null>(null)
 const name = ref<string>()
 const price = ref<number>()
 const quantity = ref<number>()
@@ -144,14 +193,16 @@ const sorting = ref([
   { value: 'nameDesc', title: 'Nom (Z-A)' },
   { value: 'priceAsc', title: 'Prix (bas à élevé)' },
   { value: 'priceDesc', title: 'Prix (élevé à bas)' }
-
 ])
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 async function getProducts () {
   let productsRefQ = query(productsRef)
   if (selectedCategory.value && selectedCategory.value !== 'tout') {
-    productsRefQ = query(productsRef, where('category', '==', selectedCategory.value))
+    productsRefQ = query(
+      productsRef,
+      where('category', '==', selectedCategory.value)
+    )
   }
   const products = await getDocs(productsRefQ)
   return products.docs.map(doc => doc.data())
@@ -165,27 +216,27 @@ watch([selectedCategory], async () => {
 const sortedProducts = computed(() => {
   let sorted = [...products.value]
   switch (sortBy.value) {
-    case 'latest':
-      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
-      break
+    // case 'latest':
+    //   sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
+    //   break
     case 'quantity':
-      sorted = sorted.sort((a, b) => b.quantity - a.quantity)
+      sorted = sorted.slice().sort((a, b) => b.quantity - a.quantity)
       break
     case 'nameAsc':
-      sorted = sorted.sort((a, b) => a.name.localeCompare(b.name))
+      sorted = sorted.slice().sort((a, b) => a.name.localeCompare(b.name))
       break
     case 'nameDesc':
-      sorted = sorted.sort((a, b) => b.name.localeCompare(a.name))
+      sorted = sorted.slice().sort((a, b) => b.name.localeCompare(a.name))
       break
     case 'priceAsc':
-      sorted = sorted.sort((a, b) => a.price - b.price)
+      sorted = sorted.slice().sort((a, b) => a.price - b.price)
       break
     case 'priceDesc':
-      sorted = sorted.sort((a, b) => b.price - a.price)
+      sorted = sorted.slice().sort((a, b) => b.price - a.price)
       break
-    default:
-      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
-      break
+    // default:
+    //   sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
+    //   break
   }
   return sorted
 })
@@ -196,7 +247,9 @@ function createProduct () {
 }
 
 async function saveProduct () {
-  if (!form.value?.validate() || !id.value) { return }
+  if (!form.value?.validate() || !id.value) {
+    return
+  }
   loading.value = true
   try {
     const productRef = doc(productsRef, id.value)
@@ -229,7 +282,9 @@ async function saveProduct () {
 
 async function deleteProduct () {
   loading.value = true
-  if (!id.value) { return }
+  if (!id.value) {
+    return
+  }
 
   try {
     const productRef = doc(productsRef, id.value)
