@@ -196,7 +196,7 @@ const sorting = ref([
 ])
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
-async function getProducts () {
+const getProducts = async () => {
   let productsRefQ = query(productsRef)
   if (selectedCategory.value && selectedCategory.value !== 'tout') {
     productsRefQ = query(
@@ -241,12 +241,12 @@ const sortedProducts = computed(() => {
   return sorted
 })
 
-function createProduct () {
+const createProduct = () => {
   id.value = doc(productsRef).id
   dialog.value = true
 }
 
-async function saveProduct () {
+const saveProduct = async () => {
   if (!form.value?.validate() || !id.value) {
     return
   }
@@ -280,7 +280,7 @@ async function saveProduct () {
   }
 }
 
-async function deleteProduct () {
+const deleteProduct = async () => {
   loading.value = true
   if (!id.value) {
     return
@@ -299,7 +299,7 @@ async function deleteProduct () {
   }
 }
 
-function edit (productItem: LocalProductType) {
+const edit = (productItem: LocalProductType) => {
   id.value = productItem.id
   name.value = productItem.name
   price.value = productItem.price
@@ -311,7 +311,7 @@ function edit (productItem: LocalProductType) {
   dialog.value = true
 }
 
-function reset () {
+const reset = () => {
   id.value = null
   name.value = ''
   price.value = 0

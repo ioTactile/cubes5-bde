@@ -95,7 +95,7 @@ const inBasket = computed(() => basket.value[product.id])
 
 watch(inBasket, value => (quantity.value = value))
 
-async function addToCart () {
+const addToCart = async () => {
   updateBasketStore({
     productId: product.id,
     quantity: quantity.value

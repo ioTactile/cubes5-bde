@@ -101,7 +101,7 @@ const usersRef = collection(db, 'users').withConverter(userConverter)
 const usersDocs = await getDocs(usersRef)
 const users = ref(usersDocs.docs.map(doc => doc.data()))
 
-async function createUser () {
+const createUser = async () => {
   if (
     !(await form.value?.validate())?.valid ||
     !email.value ||
@@ -128,7 +128,7 @@ async function createUser () {
   }
 }
 
-async function removeUser (id: string) {
+const removeUser = async (id: string) => {
   removing.value = id
 
   try {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row class="mx-4">
-      <v-col cols="9">
+      <v-col cols="12" md="9">
         <span class="text-headline font-weight-bold pl-1">Mon panier</span>
         <v-divider color="stroke" class="my-2" />
         <v-card v-for="(product, i) in basket" :key="i" rounded="0" flat>
@@ -34,7 +34,7 @@
           </div>
         </v-card>
       </v-col>
-      <v-col cols="3">
+      <v-col cols="12" md="3">
         <span class="text-headline font-weight-bold pl-1">Récapitulatif</span>
         <v-divider color="stroke" class="my-2" />
         <v-card rounded="0" flat>
@@ -82,7 +82,7 @@ const basket = ref<BasketItem[]>([])
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 
-async function getBasket () {
+const getBasket = async () => {
   const basketPromises = Object.keys(basketStore.value).map(async (key) => {
     const productRef = doc(productsRef, key)
     const productDoc = await getDoc(productRef)
@@ -106,30 +106,28 @@ const getBaskeTotal = () => {
   return total
 }
 
-// const resetBasket = async () => {
-//   if (!user.value) {
-//     return
-//   }
-//   const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
-//   await setDoc(userRef, { basket: {} }, { merge: true })
-//   clearBasketStore()
-// }
-
 const updateBasket = async (product: BasketItem, newQuantity: number) => {
   if (!user.value) {
     return
   }
   const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+
+  updateBasketStore({
+    productId: product.id,
+    quantity: newQuantity
+  })
+
   await setDoc(
     userRef,
     { basket: { [product.id]: newQuantity } },
     { merge: true }
   )
-  updateBasketStore({
-    productId: product.id,
-    quantity: newQuantity
-  })
+
+  if (newQuantity === 0) {
+    basket.value = basket.value.filter(item => item.id !== product.id)
+  }
 }
+
 </script>
 
 <style scoped>

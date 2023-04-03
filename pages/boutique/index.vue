@@ -118,7 +118,7 @@ const sorting = ref([
 ])
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
-async function getProducts () {
+const getProducts = async () => {
   let productsRefQ = query(productsRef)
   if (selectedCategory.value && selectedCategory.value !== 'tout') {
     productsRefQ = query(

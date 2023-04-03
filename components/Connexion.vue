@@ -146,7 +146,7 @@ onBeforeMount(async () => {
   }
 })
 
-async function login () {
+const login = async () => {
   if (!auth || !(await form.value?.validate())?.valid) {
     return
   }

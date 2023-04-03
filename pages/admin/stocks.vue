@@ -56,7 +56,7 @@ const productsRef = collection(db, 'products').withConverter(productConverter)
 const productsDocs = await getDocs(productsRef)
 const products = ref(productsDocs.docs.map(doc => doc.data()))
 
-async function updateQuantity (productId: string, quantityUpdated: number) {
+const updateQuantity = async (productId: string, quantityUpdated: number) => {
   const productRef = doc(productsRef, productId)
   await setDoc(
     productRef,

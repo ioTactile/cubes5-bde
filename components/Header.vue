@@ -224,7 +224,7 @@ onMounted(async () => {
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 
-async function getBasket () {
+const getBasket = async () => {
   const basketPromises = Object.keys(basketStore.value).map(async (key) => {
     const productRef = doc(productsRef, key)
     const productDoc = await getDoc(productRef)

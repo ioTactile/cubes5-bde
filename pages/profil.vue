@@ -135,7 +135,7 @@ const openDeleteUser = ref(false)
 const firstName = ref<string>()
 const lastName = ref<string>()
 
-function isChange () {
+const isChange = () => {
   if (!change.value) {
     change.value = true
   } else {
@@ -160,7 +160,7 @@ onMounted(async () => {
   userClaims.value = claims
 })
 
-async function updateProfile () {
+const updateProfile = async () => {
   loading.value = true
   try {
     if (user.value) {
@@ -189,7 +189,7 @@ async function updateProfile () {
   }
 }
 
-async function deleteProfile () {
+const deleteProfile = async () => {
   if (!user.value) {
     return
   }
@@ -210,7 +210,7 @@ async function deleteProfile () {
   }
 }
 
-async function logout () {
+const logout = async () => {
   if (!auth) {
     return
   }
