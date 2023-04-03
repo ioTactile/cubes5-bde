@@ -127,7 +127,6 @@ const updateBasket = async (product: BasketItem, newQuantity: number) => {
     basket.value = basket.value.filter(item => item.id !== product.id)
   }
 }
-
 </script>
 
 <style scoped>

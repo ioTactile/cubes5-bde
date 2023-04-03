@@ -96,7 +96,7 @@
       width="250"
       location="right"
     >
-      <h3 color="headline" class="text-center py-4 bg-secondary">
+      <h3 color="headline" class="text-center py-4 bg-stroke">
         Panier
       </h3>
       <v-card
@@ -105,6 +105,7 @@
         variant="flat"
         :to="`/boutique/${product.slug}`"
         class="my-0 px-4"
+        @click="basketDrawer = false"
       >
         <v-row no-gutters>
           <v-col cols="3" class="pa-1">
@@ -127,7 +128,14 @@
         <span>Sous-total</span>
         <span class="float-right">{{ getBaskeTotal() }} €</span>
         <v-divider class="my-4" color="stroke" />
-        <v-btn color="buttonBack" to="/panier" block rounded="0" class="mb-2">
+        <v-btn
+          color="buttonBack"
+          to="/panier"
+          block
+          rounded="0"
+          class="mb-2"
+          @click="basketDrawer = false"
+        >
           Voir le panier
         </v-btn>
         <v-btn rounded="0" block color="tertiary" @click="resetBasket">

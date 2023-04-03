@@ -21,7 +21,7 @@
         </div>
         <span class="text-h6 text-paragraph">Prix: {{ product.price }} €</span>
         <div class="mt-12">
-          <InputsQuantity v-model="quantity" variant="plain" />
+          <InputsQuantity v-model="quantity" variant="underlined" />
           <v-btn
             color="white"
             block

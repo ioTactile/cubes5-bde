@@ -106,7 +106,7 @@
               label="Quantité"
               variant="outlined"
             />
-            <!-- <v-text-field v-model="image" label="Image URL" variant="outlined" /> -->
+            <!-- <InputsImage v-model="image" :product-id="id" /> -->
             <v-file-input
               v-model="image"
               accept="image/png, image/jpeg, image/bmp"
@@ -260,16 +260,18 @@ const saveProduct = async () => {
 
     await setDoc(productRef, {
       id: id.value,
-      name: name.value,
-      price: price.value,
-      quantity: quantity.value,
-      description: description.value,
+      name: name.value!,
+      description: description.value!,
+      price: price.value!,
+      quantity: quantity.value!,
       image: {
         name: image.value[0].name,
         url: await getDownloadURL(fileRef)
       },
-      category: category.value,
+      category: category.value!,
       slug: slugify(name.value + '-' + productRef.id, { lower: true }),
+      soldNb: 0,
+      wishListNb: 0,
       creationDate: Timestamp.fromDate(creationDate.value),
       updateDate: Timestamp.now()
     })
@@ -305,7 +307,7 @@ const edit = (productItem: LocalProductType) => {
   price.value = productItem.price
   quantity.value = productItem.quantity
   description.value = productItem.description
-  image.value = productItem.image
+  // image.value = productItem.image
   category.value = productItem.category
   creationDate.value = productItem.creationDate
   dialog.value = true

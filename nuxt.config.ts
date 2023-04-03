@@ -1,4 +1,11 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { ServiceAccount } from 'firebase-admin/app'
+
+const serviceAccount: ServiceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+}
+
 export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt', 'nuxt-vuefire'],
   build: { transpile: ['vuetify'] },
@@ -16,8 +23,6 @@ export default defineNuxtConfig({
       appId: '1:775663924437:web:35a370c5511919bc4fde5c',
       measurementId: 'G-420TF53Z71'
     },
-    admin: {
-      serviceAccount: process.env.ADMIN_CREDENTIALS
-    }
+    admin: { serviceAccount }
   }
 })
