@@ -22,11 +22,25 @@
         <v-form ref="form" @submit.prevent="login">
           <InputsEmail v-model="email" variant="outlined" icon />
           <template v-if="!forgotPassword">
-            <InputsPassword v-if="!createAccount" v-model="password" variant="outlined" />
-            <InputsPasswordFirst v-else v-model="password" variant="outlined" not-in-line />
+            <InputsPassword
+              v-if="!createAccount"
+              v-model="password"
+              variant="outlined"
+            />
+            <InputsPasswordFirst
+              v-else
+              v-model="password"
+              variant="outlined"
+              not-in-line
+            />
           </template>
 
-          <v-btn v-if="!createAccount" class="mb-2" variant="text" @click="forgotPassword = !forgotPassword">
+          <v-btn
+            v-if="!createAccount"
+            class="mb-2"
+            variant="text"
+            @click="forgotPassword = !forgotPassword"
+          >
             {{ forgotPassword ? 'Connexion' : 'Mot de passe oublié' }}
           </v-btn>
 
@@ -37,7 +51,13 @@
             :disabled="loading !== null && loading !== 'email'"
             :loading="loading === 'email'"
           >
-            {{ createAccount ? "M'inscire" : forgotPassword ? 'Réinitialiser mon mot de passe' : 'Connexion' }}
+            {{
+              createAccount
+                ? "M'inscire"
+                : forgotPassword
+                  ? 'Réinitialiser mon mot de passe'
+                  : 'Connexion'
+            }}
           </v-btn>
         </v-form>
       </v-card-text>
@@ -50,7 +70,13 @@
         </v-card-title>
         <v-card-text class="text-center">
           <span>N'attends plus et rejoint le club</span>
-          <v-btn class="mt-2" color="buttonBack" block :disabled="loading !== null" @click="createAccount = true">
+          <v-btn
+            class="mt-2"
+            color="buttonBack"
+            block
+            :disabled="loading !== null"
+            @click="createAccount = true"
+          >
             Créer un compte
           </v-btn>
         </v-card-text>
@@ -63,7 +89,13 @@
         </v-card-title>
         <v-card-text class="text-center">
           <span>Connectes toi pour rentrer dans le club</span>
-          <v-btn class="mt-2" color="buttonBack" block :disabled="loading !== null" @click="createAccount = false">
+          <v-btn
+            class="mt-2"
+            color="buttonBack"
+            block
+            :disabled="loading !== null"
+            @click="createAccount = false"
+          >
             Connexion
           </v-btn>
         </v-card-text>
@@ -100,7 +132,7 @@ const emits = defineEmits<{(e: 'update:modelValue', value: boolean): void }>()
 
 const email = ref('')
 const password = ref('')
-const userClaims = ref<null|ParsedToken>(null)
+const userClaims = ref<null | ParsedToken>(null)
 const date = ref(new Date(Date.now()))
 const createAccount = ref(false)
 const forgotPassword = ref(false)
@@ -115,23 +147,29 @@ onBeforeMount(async () => {
 })
 
 async function login () {
-  if (!auth || !(await form.value?.validate())?.valid) { return }
+  if (!auth || !(await form.value?.validate())?.valid) {
+    return
+  }
   loading.value = 'email'
   try {
     if (createAccount.value) {
-      createUserWithEmailAndPassword(auth, email.value, password.value).then((credentials) => {
-        const userRef = doc(db, 'users', credentials.user.uid).withConverter(userConverter)
-        setDoc(
-          userRef,
-          {
-            id: credentials.user.uid,
-            email: email.value,
-            creationDate: Timestamp.fromDate(date.value),
-            updateDate: Timestamp.now()
-          },
-          { merge: true }
-        )
-      })
+      createUserWithEmailAndPassword(auth, email.value, password.value).then(
+        (credentials) => {
+          const userRef = doc(db, 'users', credentials.user.uid).withConverter(
+            userConverter
+          )
+          setDoc(
+            userRef,
+            {
+              id: credentials.user.uid,
+              email: email.value,
+              creationDate: Timestamp.fromDate(date.value),
+              updateDate: Timestamp.now()
+            },
+            { merge: true }
+          )
+        }
+      )
       $notifier({ content: 'Inscription réussie', color: 'success' })
     } else if (forgotPassword.value) {
       await sendPasswordResetEmail(auth, email.value)
@@ -141,7 +179,11 @@ async function login () {
       })
       forgotPassword.value = false
     } else {
-      const userCredentials = await signInWithEmailAndPassword(auth, email.value, password.value)
+      const userCredentials = await signInWithEmailAndPassword(
+        auth,
+        email.value,
+        password.value
+      )
       const { claims } = await getIdTokenResult(userCredentials.user, true)
       if (claims.admin) {
         navigateTo('/admin')

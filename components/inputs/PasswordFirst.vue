@@ -39,12 +39,12 @@
 const MIN_LENGTH = 6
 
 defineProps<{
-  modelValue?: string,
-  variant?: 'filled' | 'outlined' | 'plain' | 'underlined' | 'solo',
-  notInLine?: boolean,
-  inputClass?: string,
+  modelValue?: string
+  variant?: 'filled' | 'outlined' | 'plain' | 'underlined' | 'solo'
+  notInLine?: boolean
+  inputClass?: string
 }>()
-const emits = defineEmits<{(e: 'update:model-value', value?: string): void}>()
+const emits = defineEmits<{(e: 'update:model-value', value?: string): void }>()
 
 const password = ref('')
 const passwordConfirm = ref('')

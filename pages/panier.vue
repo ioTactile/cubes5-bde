@@ -1,3 +1,139 @@
 <template>
-  <div>Hi</div>
+  <div>
+    <v-row class="mx-4">
+      <v-col cols="9">
+        <span class="text-headline font-weight-bold pl-1">Mon panier</span>
+        <v-divider color="stroke" class="my-2" />
+        <v-card v-for="(product, i) in basket" :key="i" rounded="0" flat>
+          <div class="d-flex">
+            <v-img :src="product.image?.url" height="150px" />
+            <div
+              class="flex-grow-1 d-flex flex-column justify-space-between pt-2"
+            >
+              <div class="d-flex flex-column mb-4 ml-4">
+                <span class="text-h6 font-weight-bold">{{ product.name }}</span>
+                <span class="text-body-2 text-medium-emphasis text-paragraph">{{
+                  product.category
+                }}</span>
+              </div>
+              <div class="d-flex align-center justify-space-between">
+                <v-btn
+                  icon="mdi-delete"
+                  variant="flat"
+                  @click="updateBasket(product, 0)"
+                />
+                <InputsQuantity
+                  v-model="product.amount"
+                  variant="underlined"
+                  class="mt-2"
+                  @update:model-value="updateBasket(product, $event || 0)"
+                />
+                <span class="mr-4 my-auto font-weight-bold">{{ product.price * product.amount }} €</span>
+              </div>
+            </div>
+          </div>
+        </v-card>
+      </v-col>
+      <v-col cols="3">
+        <span class="text-headline font-weight-bold pl-1">Récapitulatif</span>
+        <v-divider color="stroke" class="my-2" />
+        <v-card rounded="0" flat>
+          <div class="d-flex flex-column pa-4">
+            <div>
+              <span>Total HT:</span>
+              <span class="float-right">{{ (getBaskeTotal() / 1.2).toFixed(2) }} €</span>
+            </div>
+            <div class="mt-2">
+              <span>TVA:</span>
+              <span class="float-right">20 %</span>
+            </div>
+            <v-divider color="stroke" class="my-4" />
+            <div>
+              <span>Total:</span>
+              <span class="float-right">{{ getBaskeTotal() }} €</span>
+            </div>
+            <v-btn color="buttonBack" block rounded="0" class="mt-4">
+              Paiement
+            </v-btn>
+            <span class="text-center text-body-2 mt-4"><v-icon size="small" icon="mdi-lock" /> Paiement sécurisé</span>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
+
+<script lang="ts" setup>
+import { storeToRefs } from 'pinia'
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+import { productConverter, LocalProductType, userConverter } from '~/stores'
+import { useBasketStore } from '~/stores/basket'
+
+type BasketItem = LocalProductType & { amount: number }
+
+const db = useFirestore()
+const user = useCurrentUser()
+const store = useBasketStore()
+const { basket: basketStore } = storeToRefs(store)
+const { updateBasket: updateBasketStore } = store
+
+const basket = ref<BasketItem[]>([])
+
+const productsRef = collection(db, 'products').withConverter(productConverter)
+
+async function getBasket () {
+  const basketPromises = Object.keys(basketStore.value).map(async (key) => {
+    const productRef = doc(productsRef, key)
+    const productDoc = await getDoc(productRef)
+    const product = productDoc.data()
+    return {
+      ...product,
+      amount: basketStore.value[key]
+    } as BasketItem
+  })
+  const basket = await Promise.all(basketPromises)
+  return basket
+}
+
+const basketItems = await getBasket()
+basket.value = basketItems
+
+const getBaskeTotal = () => {
+  const total = basket.value.reduce((acc, item) => {
+    return acc + item.price * item.amount
+  }, 0)
+  return total
+}
+
+// const resetBasket = async () => {
+//   if (!user.value) {
+//     return
+//   }
+//   const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+//   await setDoc(userRef, { basket: {} }, { merge: true })
+//   clearBasketStore()
+// }
+
+const updateBasket = async (product: BasketItem, newQuantity: number) => {
+  if (!user.value) {
+    return
+  }
+  const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+  await setDoc(
+    userRef,
+    { basket: { [product.id]: newQuantity } },
+    { merge: true }
+  )
+  updateBasketStore({
+    productId: product.id,
+    quantity: newQuantity
+  })
+}
+</script>
+
+<style scoped>
+.inputs-quantity {
+  width: 180px !important;
+}
+</style>

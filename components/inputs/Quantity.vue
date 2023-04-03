@@ -16,26 +16,35 @@
 </template>
 
 <script lang="ts" setup>
-const props = withDefaults(defineProps<{
-  modelValue?: number,
-  label?: string,
-  rules?: [],
-  variant?: 'filled' | 'outlined' | 'plain' | 'underlined' | 'solo',
-}>(), {
-  modelValue: undefined,
-  label: 'Quantité',
-  rules: undefined,
-  variant: undefined
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: number
+    label?: string
+    rules?: []
+    variant?: 'filled' | 'outlined' | 'plain' | 'underlined' | 'solo'
+  }>(),
+  {
+    modelValue: undefined,
+    label: 'Quantité',
+    rules: undefined,
+    variant: undefined
+  }
+)
 
-const emits = defineEmits<{(e: 'update:model-value', val?: number): void}>()
+const emits = defineEmits<{(e: 'update:model-value', val?: number): void }>()
 
 const upQuantity = () => {
-  if (!props.modelValue) { return emits('update:model-value', 0) }
+  if (!props.modelValue) {
+    return emits('update:model-value', 0)
+  }
   return emits('update:model-value', props.modelValue + 1)
 }
 const downQuantity = () => {
-  if (!props.modelValue) { return emits('update:model-value', 0) }
-  if (props.modelValue > 0) { return emits('update:model-value', props.modelValue - 1) }
+  if (!props.modelValue) {
+    return emits('update:model-value', 0)
+  }
+  if (props.modelValue > 0) {
+    return emits('update:model-value', props.modelValue - 1)
+  }
 }
 </script>

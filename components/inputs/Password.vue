@@ -14,21 +14,24 @@
     @keypress.enter="$emit('press-enter', $event)"
   />
 </template>
-  
-  <script lang="ts" setup>
-  const MIN_LENGTH = 6
-  
-  defineProps<{
-    modelValue?: string,
-    variant?: 'filled' | 'outlined' | 'plain' | 'underlined' | 'solo',
-    rounded?: boolean,
-  }>()
-  defineEmits<{(e: 'update:model-value', value?: string): void, (e: 'press-enter'): void}>()
-  
-  const show = ref(false)
-  
-  const rules = [
-    (v?: string) => !!v || 'Mot de passe requis',
-    (v: string) => (v && v.length >= MIN_LENGTH) || '6 caractères minimum'
-  ]
-  </script>
+
+<script lang="ts" setup>
+const MIN_LENGTH = 6
+
+defineProps<{
+  modelValue?: string
+  variant?: 'filled' | 'outlined' | 'plain' | 'underlined' | 'solo'
+  rounded?: boolean
+}>()
+defineEmits<{
+  (e: 'update:model-value', value?: string): void
+  (e: 'press-enter'): void
+}>()
+
+const show = ref(false)
+
+const rules = [
+  (v?: string) => !!v || 'Mot de passe requis',
+  (v: string) => (v && v.length >= MIN_LENGTH) || '6 caractères minimum'
+]
+</script>

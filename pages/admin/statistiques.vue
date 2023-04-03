@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-table class="mx-4" hover fixed-header :height="products.length > 13 ? '60vh' : ''">
+    <v-table
+      class="mx-4"
+      hover
+      fixed-header
+      :height="products.length > 13 ? '60vh' : ''"
+    >
       <thead>
         <tr>
           <th>Produit</th>
@@ -20,7 +25,12 @@
             {{ product.soldNb || 0 }}
           </td>
           <td>
-            {{ product.soldNb ? (product.soldNb * product.price / 1.20).toFixed(2) : 0 }} €
+            {{
+              product.soldNb
+                ? ((product.soldNb * product.price) / 1.2).toFixed(2)
+                : 0
+            }}
+            €
           </td>
           <td>{{ product.wishListNb || 0 }}</td>
         </tr>
@@ -41,5 +51,4 @@ const db = useFirestore()
 const productsRef = collection(db, 'products').withConverter(productConverter)
 const productsDocs = await getDocs(productsRef)
 const products = ref(productsDocs.docs.map(doc => doc.data()))
-
 </script>

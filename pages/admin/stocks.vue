@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-table class="mx-4" hover fixed-header :height="products.length > 9 ? '60vh' : ''">
+    <v-table
+      class="mx-4"
+      hover
+      fixed-header
+      :height="products.length > 9 ? '60vh' : ''"
+    >
       <thead>
         <tr>
           <th>Produit</th>
@@ -16,13 +21,22 @@
           </td>
           <td>{{ product.name }}</td>
           <td>
-            <v-text-field v-model="product.quantity" variant="outlined" hide-details class="my-2 pa-0">
+            <v-text-field
+              v-model="product.quantity"
+              variant="outlined"
+              hide-details
+              class="my-2 pa-0"
+            >
               <template #append-inner>
-                <v-btn variant="text" icon="mdi-update" @click="updateQuantity(product.id, product.quantity)" />
+                <v-btn
+                  variant="text"
+                  icon="mdi-update"
+                  @click="updateQuantity(product.id, product.quantity)"
+                />
               </template>
             </v-text-field>
           </td>
-          <td>{{ (product.price / 1.20).toFixed(2) }} €</td>
+          <td>{{ (product.price / 1.2).toFixed(2) }} €</td>
         </tr>
       </tbody>
     </v-table>
@@ -44,9 +58,13 @@ const products = ref(productsDocs.docs.map(doc => doc.data()))
 
 async function updateQuantity (productId: string, quantityUpdated: number) {
   const productRef = doc(productsRef, productId)
-  await setDoc(productRef, {
-    quantity: quantityUpdated
-  }, { merge: true })
+  await setDoc(
+    productRef,
+    {
+      quantity: quantityUpdated
+    },
+    { merge: true }
+  )
 }
 </script>
 
@@ -54,5 +72,4 @@ async function updateQuantity (productId: string, quantityUpdated: number) {
 .v-field__append-inner {
   padding-top: 0 !important;
 }
-
 </style>

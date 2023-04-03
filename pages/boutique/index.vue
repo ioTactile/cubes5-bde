@@ -21,7 +21,11 @@
         <v-divider class="my-4" />
         <v-expansion-panels>
           <v-expansion-panel bg-color="main" elevation="0">
-            <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus" color="headline">
+            <v-expansion-panel-title
+              expand-icon="mdi-plus"
+              collapse-icon="mdi-minus"
+              color="headline"
+            >
               Catégories
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -40,7 +44,11 @@
         <v-divider class="my-4" />
         <v-expansion-panels>
           <v-expansion-panel bg-color="main" elevation="0">
-            <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus" color="headline">
+            <v-expansion-panel-title
+              expand-icon="mdi-plus"
+              collapse-icon="mdi-minus"
+              color="headline"
+            >
               Prix
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -93,8 +101,8 @@ import { productConverter } from '~/stores'
 const db = useFirestore()
 const { mdAndUp } = useDisplay()
 
-const sortBy = ref<string|null>(null)
-const selectedCategory = ref<string|null>(null)
+const sortBy = ref<string | null>(null)
+const selectedCategory = ref<string | null>(null)
 const categories = ref([
   { value: 'bonbons', title: 'Bonbons' },
   { value: 'gateaux', title: 'Gâteaux' },
@@ -107,14 +115,16 @@ const sorting = ref([
   { value: 'nameDesc', title: 'Nom (Z-A)' },
   { value: 'priceAsc', title: 'Prix (bas à élevé)' },
   { value: 'priceDesc', title: 'Prix (élevé à bas)' }
-
 ])
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 async function getProducts () {
   let productsRefQ = query(productsRef)
   if (selectedCategory.value && selectedCategory.value !== 'tout') {
-    productsRefQ = query(productsRef, where('category', '==', selectedCategory.value))
+    productsRefQ = query(
+      productsRef,
+      where('category', '==', selectedCategory.value)
+    )
   }
   const products = await getDocs(productsRefQ)
   return products.docs.map(doc => doc.data())
@@ -128,9 +138,9 @@ watch([selectedCategory], async () => {
 const sortedProducts = computed(() => {
   let sorted = [...products.value]
   switch (sortBy.value) {
-    case 'latest':
-      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
-      break
+    // case 'latest':
+    //   sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
+    //   break
     case 'quantity':
       sorted = sorted.sort((a, b) => b.quantity - a.quantity)
       break
@@ -146,11 +156,10 @@ const sortedProducts = computed(() => {
     case 'priceDesc':
       sorted = sorted.sort((a, b) => b.price - a.price)
       break
-    default:
-      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
-      break
+    // default:
+    //   sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
+    //   break
   }
   return sorted
 })
-
 </script>

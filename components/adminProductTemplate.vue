@@ -13,7 +13,7 @@
     </h3>
     <v-card-text class="d-flex flex-column align-center text-paragraph">
       <span class="mb-4">Stock: {{ product.quantity }}</span>
-      <span>Prix: {{ product.price }} €  TTC</span>
+      <span>Prix: {{ product.price }} € TTC</span>
     </v-card-text>
   </v-card>
 </template>
@@ -22,8 +22,8 @@
 import { LocalProductType } from '~/stores'
 
 defineProps<{
-    product: LocalProductType;
+  product: LocalProductType
 }>()
 
-const emits = defineEmits<{(e: 'edit'): void}>()
+const emits = defineEmits<{(e: 'edit'): void }>()
 </script>

@@ -2,13 +2,9 @@
   <v-container>
     <div class="mb-4">
       <NuxtLink to="/boutique" class="text-decoration-none">
-        <span class="text-paragraph">
-          Retour
-        </span>
+        <span class="text-paragraph"> Retour </span>
       </NuxtLink>
-      <span class="text-medium-emphasis">
-        / {{ product.name }}
-      </span>
+      <span class="text-medium-emphasis"> / {{ product.name }} </span>
     </div>
     <v-row>
       <v-col cols="12" sm="6">
@@ -19,9 +15,11 @@
           <h3 class="text-headline text-h4 font-weight-bold mb-2">
             {{ product.name }}
           </h3>
-          <span class="text-paragraph text-subtitle-1 text text-medium-emphasis">{{ product.category }}</span>
+          <span
+            class="text-paragraph text-subtitle-1 text text-medium-emphasis"
+          >{{ product.category }}</span>
         </div>
-        <span class="text-h6 text-paragraph ">Prix: {{ product.price }} €</span>
+        <span class="text-h6 text-paragraph">Prix: {{ product.price }} €</span>
         <div class="mt-12">
           <InputsQuantity v-model="quantity" variant="plain" />
           <v-btn
@@ -33,17 +31,22 @@
           >
             {{ inBasket ? 'Modifier' : 'Ajouter' }}
           </v-btn>
-          <v-btn
-            color="buttonBack"
-            block
-            rounded="0"
-          >
+          <v-btn color="buttonBack" block rounded="0">
             Commander et payer
           </v-btn>
         </div>
         <div class="mt-12">
-          <v-btn variant="text" block @click="descriptionDetails = !descriptionDetails">
-            <span class="d-flex align-center">Détails du produit <v-icon class="ml-2" :icon="descriptionDetails ? 'mdi-minus': 'mdi-plus'" size="small" /></span>
+          <v-btn
+            variant="text"
+            block
+            @click="descriptionDetails = !descriptionDetails"
+          >
+            <span class="d-flex align-center">Détails du produit
+              <v-icon
+                class="ml-2"
+                :icon="descriptionDetails ? 'mdi-minus' : 'mdi-plus'"
+                size="small"
+              /></span>
           </v-btn>
           <p v-if="descriptionDetails" class="mt-4">
             {{ product.description }}
@@ -55,7 +58,15 @@
 </template>
 
 <script lang="ts" setup async>
-import { collection, doc, getDocs, setDoc, query, where, limit } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  query,
+  where,
+  limit
+} from 'firebase/firestore'
 import { storeToRefs } from 'pinia'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import { useBasketStore } from '~/stores/basket'
@@ -90,9 +101,12 @@ async function addToCart () {
     quantity: quantity.value
   })
 
-  if (!user.value) { return }
-  const basketRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
-  await setDoc(basketRef,
+  if (!user.value) {
+    return
+  }
+  const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+  await setDoc(
+    userRef,
     { basket: { [product.id]: quantity.value } },
     { merge: true }
   )

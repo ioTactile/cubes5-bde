@@ -3,7 +3,7 @@ import {
   QueryDocumentSnapshot,
   Timestamp as FirestoreTimestamp
 } from '@firebase/firestore'
-import { Timestamp, User } from '~/functions/src/types'
+import { Timestamp, User, Product } from '~/functions/src/types'
 
 type NestedTypeMapper<T, I, O> = T extends I
   ? O
@@ -36,7 +36,11 @@ export const userConverter: FirestoreDataConverter<LocalUserType> = {
   }
 }
 
-type DatabaseProductType = NestedTypeMapper<Product, Timestamp, FirestoreTimestamp>
+type DatabaseProductType = NestedTypeMapper<
+  Product,
+  Timestamp,
+  FirestoreTimestamp
+>
 export type LocalProductType = NestedTypeMapper<Product, Timestamp, Date>
 export const productConverter: FirestoreDataConverter<LocalProductType> = {
   toFirestore: item => item,

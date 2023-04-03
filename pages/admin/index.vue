@@ -1,7 +1,5 @@
 <template>
-  <div>
-    Interface d'administration
-  </div>
+  <div>Interface d'administration</div>
 </template>
 
 <script lang="ts" setup>

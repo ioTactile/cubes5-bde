@@ -25,8 +25,8 @@
 <script lang="ts" setup>
 const props = defineProps<{
   error: {
-    statusCode: number,
-    statusMessage: string,
+    statusCode: number
+    statusMessage: string
   }
 }>()
 
@@ -36,6 +36,9 @@ const btnOutlined = ref(true)
 console.error(props)
 
 useHead({
-  title: props.error.statusCode === 404 ? 'Page introuvable' : 'Une erreur est survenue'
+  title:
+    props.error.statusCode === 404
+      ? 'Page introuvable'
+      : 'Une erreur est survenue'
 })
 </script>

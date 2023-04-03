@@ -6,8 +6,17 @@
           <h4 class="text-buttonText">
             Boutique
           </h4>
-          <v-divider class="my-2" :style="!mdAndUp ? 'margin: 0 auto' : ''" :length="!mdAndUp ? '40%' : '70%'" />
-          <NuxtLink v-for="(item, i) in items" :key="i" :to="item.link" class="d-flex justify-center justify-md-start text-decoration-none text-paragraph">
+          <v-divider
+            class="my-2"
+            :style="!mdAndUp ? 'margin: 0 auto' : ''"
+            :length="!mdAndUp ? '40%' : '70%'"
+          />
+          <NuxtLink
+            v-for="(item, i) in items"
+            :key="i"
+            :to="item.link"
+            class="d-flex justify-center justify-md-start text-decoration-none text-paragraph"
+          >
             {{ item.title }}
           </NuxtLink>
         </v-col>
@@ -15,7 +24,11 @@
           <h4 class="text-buttonText">
             Adresse
           </h4>
-          <v-divider class="my-2" :style="!mdAndUp ? 'margin: 0 auto' : ''" :length="!mdAndUp ? '40%' : '70%'" />
+          <v-divider
+            class="my-2"
+            :style="!mdAndUp ? 'margin: 0 auto' : ''"
+            :length="!mdAndUp ? '40%' : '70%'"
+          />
           <p>
             7 bis Av. Robert Schuman<br>
             51100 Reims, France
@@ -25,7 +38,11 @@
           <h4 class="text-buttonText">
             Horaires d'ouverture
           </h4>
-          <v-divider class="my-2" :style="!mdAndUp ? 'margin: 0 auto' : ''" :length="!mdAndUp ? '40%' : '70%'" />
+          <v-divider
+            class="my-2"
+            :style="!mdAndUp ? 'margin: 0 auto' : ''"
+            :length="!mdAndUp ? '40%' : '70%'"
+          />
           <p>
             Matin: 10h30 - 10h45<br>
             Après-midi: 15h30 - 15h45<br><br>
@@ -36,23 +53,27 @@
           <h4 class="text-buttonText">
             Restez à jour
           </h4>
-          <v-divider class="my-2" :style="!mdAndUp ? 'margin: 0 auto' : ''" :length="!mdAndUp ? '40%' : '70%'" />
+          <v-divider
+            class="my-2"
+            :style="!mdAndUp ? 'margin: 0 auto' : ''"
+            :length="!mdAndUp ? '40%' : '70%'"
+          />
           <v-text-field
             outlined
             dense
             placeholder="Votre adresse email"
             class="mt-2"
           />
-          <v-btn
-            color="buttonBack"
-            block
-          >
+          <v-btn color="buttonBack" block>
             S'abonner
           </v-btn>
         </v-col>
         <v-col cols="12" class="text-center mt-4">
           © {{ new Date().getFullYear() }} - Réalisé par
-          <a href="https://github.com/ioTactile" class="text-decoration-none text-headline">
+          <a
+            href="https://github.com/ioTactile"
+            class="text-decoration-none text-headline"
+          >
             <strong>iotactile</strong>
           </a>
         </v-col>
@@ -92,7 +113,7 @@ const items = [
     link: '/politique-de-confidentialite'
   },
   {
-    title: 'Conditions d\'utilisation',
+    title: "Conditions d'utilisation",
     link: '/conditions-utilisation'
   }
 ]

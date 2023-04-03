@@ -22,7 +22,11 @@
                 <h2 class="text-h5">
                   Mon profil
                 </h2>
-                <v-btn icon="mdi-dots-vertical" variant="text" @click="openDeleteUser = !openDeleteUser" />
+                <v-btn
+                  icon="mdi-dots-vertical"
+                  variant="text"
+                  @click="openDeleteUser = !openDeleteUser"
+                />
               </v-card-title>
               <v-card-text>
                 <v-form @submit.prevent="updateProfile">
@@ -140,7 +144,9 @@ function isChange () {
 }
 
 onMounted(async () => {
-  if (!user.value) { return }
+  if (!user.value) {
+    return
+  }
   const userId = user.value.uid
   const userRef = doc(db, 'users', userId).withConverter(userConverter)
   const userDoc = await getDoc(userRef)
@@ -160,7 +166,11 @@ async function updateProfile () {
     if (user.value) {
       const userId = user.value.uid
       const userRef = doc(db, 'users', userId).withConverter(userConverter)
-      await setDoc(userRef, { firstName: firstName.value, lastName: lastName.value }, { merge: true })
+      await setDoc(
+        userRef,
+        { firstName: firstName.value, lastName: lastName.value },
+        { merge: true }
+      )
       $notifier({
         content: 'Profil mis à jour',
         color: 'main'
@@ -168,7 +178,8 @@ async function updateProfile () {
     }
   } catch (error) {
     $notifier({
-      content: 'Une erreur est survenue lors de la mise à jour de vos informations',
+      content:
+        'Une erreur est survenue lors de la mise à jour de vos informations',
       color: 'error',
       error
     })
@@ -179,7 +190,9 @@ async function updateProfile () {
 }
 
 async function deleteProfile () {
-  if (!user.value) { return }
+  if (!user.value) {
+    return
+  }
   loading.value = true
 
   try {
@@ -198,7 +211,9 @@ async function deleteProfile () {
 }
 
 async function logout () {
-  if (!auth) { return }
+  if (!auth) {
+    return
+  }
   loading.value = true
 
   try {

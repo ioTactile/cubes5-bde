@@ -21,6 +21,6 @@
 import { LocalProductType } from '~/stores'
 
 defineProps<{
-      product: LocalProductType;
-  }>()
+  product: LocalProductType
+}>()
 </script>

@@ -10,7 +10,7 @@
       <thead>
         <tr>
           <th>E-mail</th>
-          <th> Role </th>
+          <th>Role</th>
           <th />
         </tr>
       </thead>
@@ -38,18 +38,37 @@
           <v-card-title class="d-flex align-center">
             Création d'un nouvel admin
             <v-spacer />
-            <v-btn icon="mdi-close" variant="text" :disabled="loading" @click="dialog = false" />
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              :disabled="loading"
+              @click="dialog = false"
+            />
           </v-card-title>
           <v-card-text>
             <InputsEmail v-model="email" variant="outlined" icon />
-            <InputsPasswordFirst v-model="password" variant="outlined" not-in-line />
-            <v-checkbox v-model="role" label="Ajouter comme admin" value="admin" hide-details />
+            <InputsPasswordFirst
+              v-model="password"
+              variant="outlined"
+              not-in-line
+            />
+            <v-checkbox
+              v-model="role"
+              label="Ajouter comme admin"
+              value="admin"
+              hide-details
+            />
           </v-card-text>
           <v-card-actions justify="end" class="mr-2">
             <v-btn variant="text" :disabled="loading" @click="dialog = false">
               Annuler
             </v-btn>
-            <v-btn color="buttonBack" variant="outlined" :loading="loading" type="submit">
+            <v-btn
+              color="buttonBack"
+              variant="outlined"
+              :loading="loading"
+              type="submit"
+            >
               Ajouter
             </v-btn>
           </v-card-actions>
@@ -73,9 +92,9 @@ const functions = useFirebaseFunctions()
 const dialog = ref(false)
 const email = ref<string>()
 const password = ref<string>()
-const role = ref<'admin'|null>(null)
+const role = ref<'admin' | null>(null)
 const loading = ref(false)
-const removing = ref<string|null>(null)
+const removing = ref<string | null>(null)
 const form = ref<VForm>()
 
 const usersRef = collection(db, 'users').withConverter(userConverter)
@@ -83,11 +102,20 @@ const usersDocs = await getDocs(usersRef)
 const users = ref(usersDocs.docs.map(doc => doc.data()))
 
 async function createUser () {
-  if (!(await form.value?.validate())?.valid || !email.value || !password.value) { return }
+  if (
+    !(await form.value?.validate())?.valid ||
+    !email.value ||
+    !password.value
+  ) {
+    return
+  }
   loading.value = true
 
   try {
-    const { data } = await functions<{email: string, password: string, role: {admin: true}}, LocalUserType>('createAdmin')({
+    const { data } = await functions<
+      { email: string; password: string; role: { admin: true } },
+      LocalUserType
+    >('createAdmin')({
       email: email.value,
       password: password.value,
       role: { admin: true }
@@ -111,8 +139,12 @@ async function removeUser (id: string) {
   }
 }
 
-function getRole (role: { admin: true} | undefined) {
-  if (!role) { return 'Utilisateur' }
-  if (role.admin) { return 'Admin' }
+function getRole (role: { admin: true } | undefined) {
+  if (!role) {
+    return 'Utilisateur'
+  }
+  if (role.admin) {
+    return 'Admin'
+  }
 }
 </script>

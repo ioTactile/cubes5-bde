@@ -18,7 +18,9 @@ onBeforeMount(async () => {
   const auth = useFirebaseAuth()!
   await new Promise((resolve) => {
     auth.onAuthStateChanged(async (user) => {
-      if (!user) { return resolve(await navigateTo('/')) }
+      if (!user) {
+        return resolve(await navigateTo('/'))
+      }
       // const { claims } = await getIdTokenResult(user, true)
       // if (!claims.admin) { return resolve(await navigateTo('/')) }
       return resolve(null)

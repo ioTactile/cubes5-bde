@@ -1,7 +1,7 @@
 const thousandSeparator = (1111).toLocaleString('fr').replace(/1/g, '')
 const decimalSeparator = (1.1).toLocaleString('fr').replace(/1/g, '')
 
-export const toInt = (value?: string|number) => {
+export const toInt = (value?: string | number) => {
   if (!value) {
     return 0
   }
