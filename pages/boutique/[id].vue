@@ -5,6 +5,9 @@
         <span class="text-paragraph"> Retour </span>
       </NuxtLink>
       <span class="text-medium-emphasis"> / {{ product.name }} </span>
+      <span>
+        <v-btn variant="text" :loading="loading" icon="mdi-heart" :color="isWishListed ? 'secondary' : ''" @click="addToWishList" />
+      </span>
     </div>
     <v-row>
       <v-col cols="12" sm="6">
@@ -62,10 +65,13 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   setDoc,
   query,
   where,
-  limit
+  limit,
+  arrayUnion,
+  arrayRemove
 } from 'firebase/firestore'
 import { storeToRefs } from 'pinia'
 import { useCurrentUser, useFirestore } from 'vuefire'
@@ -90,6 +96,18 @@ const product = productDoc.data()
 
 const quantity = ref(1)
 const descriptionDetails = ref(false)
+const loading = ref(false)
+const isWishListed = ref(false)
+
+onMounted(async () => {
+  if (!user.value) { return }
+
+  const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+  const userDoc = await getDoc(userRef)
+  const userData = userDoc.data()?.wishList
+  if (!userData) { return }
+  isWishListed.value = userData.includes(product.id)
+})
 
 const inBasket = computed(() => basket.value[product.id])
 
@@ -110,5 +128,27 @@ const addToCart = async () => {
     { basket: { [product.id]: quantity.value } },
     { merge: true }
   )
+}
+
+const addToWishList = async () => {
+  loading.value = true
+  if (!user.value) { return }
+
+  try {
+    const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+    if (!isWishListed.value) {
+      await setDoc(userRef, {
+        wishList: arrayUnion(product.id)
+      }, { merge: true })
+      isWishListed.value = true
+    } else {
+      await setDoc(userRef, {
+        wishList: arrayRemove(product.id)
+      }, { merge: true })
+      isWishListed.value = false
+    }
+  } finally {
+    loading.value = false
+  }
 }
 </script>

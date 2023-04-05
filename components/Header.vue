@@ -2,7 +2,7 @@
   <div>
     <v-app-bar color="background" elevation="0" height="80">
       <v-app-bar-nav-icon
-        v-if="xs || (admin && adminUser && !mdAndUp)"
+        v-if="!mdAndUp || (admin && adminUser)"
         class="mr-md-4"
         @click.stop="drawer = !drawer"
       />
@@ -16,7 +16,7 @@
         </v-app-bar-title>
       </NuxtLink>
       <v-spacer />
-      <div v-if="mdAndUp && !admin">
+      <div v-if="mdAndUp && !admin" class="text-center">
         <v-btn variant="text" to="/boutique" density="compact">
           Boutique
         </v-btn>
@@ -47,18 +47,26 @@
       <v-btn icon="mdi-account" size="large" @click="isLogin('/profil')" />
       <v-btn
         v-if="!admin"
+        variant="text"
         icon="mdi-heart"
         size="large"
-        :color="wishNumber > 0 ? 'secondary' : ''"
         @click="isLogin('/favoris')"
-      />
+      >
+        <v-badge
+          :model-value="wishNb > 0"
+          :content="wishNb"
+          :class="{ 'mr-2': wishNb > 0 }"
+        >
+          <v-icon icon="mdi-heart" />
+        </v-badge>
+      </v-btn>
       <v-btn v-if="!admin" icon="mdi-cart" size="large" @click="isBasket()">
         <v-badge
           :model-value="basketNb > 0"
           :content="basketNb"
           :class="{ 'mr-2': basketNb > 0 }"
         >
-          <v-icon icon="mdi-basket" />
+          <v-icon icon="mdi-cart" />
         </v-badge>
       </v-btn>
     </v-app-bar>
@@ -167,11 +175,11 @@ const store = useBasketStore()
 const { basket: basketStore } = storeToRefs(store)
 const { clearBasket: clearBasketStore } = store
 // const { updateBasket: updateBasketStore } = store
-const { xs, mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay()
 
 const login = ref(false)
 const adminUser = ref(false)
-const wishNumber = ref(0)
+const wishNb = ref(0)
 const drawer = ref(false)
 const basketDrawer = ref(false)
 const basket = ref<BasketItem[]>([])
@@ -224,7 +232,7 @@ onMounted(async () => {
   const userDoc = await getDoc(userRef)
   const userFetched = userDoc.data()
   basketStore.value = { ...(userFetched?.basket || {}), ...basketStore.value }
-  wishNumber.value = userFetched?.wishList?.length || 0
+  wishNb.value = userFetched?.wishList?.length || 0
 
   const { claims } = await getIdTokenResult(user.value, true)
   adminUser.value = claims.admin
@@ -249,7 +257,7 @@ const getBasket = async () => {
 const basketItems = await getBasket()
 basket.value = basketItems
 
-const basketNb = computed(() => Object.keys(basket.value).length)
+const basketNb = computed(() => Object.keys(basketStore.value).length)
 
 const getBaskeTotal = () => {
   const total = basket.value.reduce((acc, item) => {
