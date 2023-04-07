@@ -2,9 +2,9 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
   Timestamp,
-} from 'firebase-admin/firestore'
+} from "firebase-admin/firestore";
 
-export { Timestamp }
+export {Timestamp};
 
 export type Image = {
   name: string
@@ -14,9 +14,9 @@ export type Image = {
 export const userConverter = {
   toFirestore: (user: User): DocumentData => user,
   fromFirestore(snapshot: QueryDocumentSnapshot<User>): User {
-    return snapshot.data()
+    return snapshot.data();
   },
-}
+};
 
 export type User = {
   id: string
@@ -33,9 +33,9 @@ export type User = {
 export const productConverter = {
   toFirestore: (product: Product): DocumentData => product,
   fromFirestore(snapshot: QueryDocumentSnapshot<Product>): Product {
-    return snapshot.data()
+    return snapshot.data();
   },
-}
+};
 
 export type Product = {
   id: string
@@ -48,6 +48,37 @@ export type Product = {
   slug: string
   soldNb: number
   wishListNb: number
+  creationDate: Timestamp
+  updateDate: Timestamp
+}
+
+export type BasketProduct = Product & {
+  amount: number
+}
+
+export const orderConverter = {
+  toFirestore: (order: Order): DocumentData => order,
+  fromFirestore(snapshot: QueryDocumentSnapshot<Order>): Order {
+    return snapshot.data();
+  },
+};
+
+export type Order = {
+  id: string
+  userId: string
+  userInformations: {
+    firstName: string
+    lastName: string
+    email: string
+  }
+  products: {
+    id: string
+    name: string
+    price: number
+    image?: Image
+    quantity: number
+  }[]
+  methods: "card" | "cash"
   creationDate: Timestamp
   updateDate: Timestamp
 }

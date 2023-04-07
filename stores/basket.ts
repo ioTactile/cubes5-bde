@@ -27,14 +27,9 @@ export const useBasketStore = defineStore(
       }
     }
 
-    const clearBasket = () => {
-      basket.value = {}
-    }
-
     return {
       basket,
-      updateBasket,
-      clearBasket
+      updateBasket
     }
   },
   {

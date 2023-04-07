@@ -160,7 +160,7 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, updateDoc, deleteField } from 'firebase/firestore'
 import { getIdTokenResult } from 'firebase/auth'
 import { useFirestore, useCurrentUser } from 'vuefire'
 import { useDisplay } from 'vuetify'
@@ -173,7 +173,6 @@ const db = useFirestore()
 const user = useCurrentUser()
 const store = useBasketStore()
 const { basket: basketStore } = storeToRefs(store)
-const { clearBasket: clearBasketStore } = store
 // const { updateBasket: updateBasketStore } = store
 const { mdAndUp } = useDisplay()
 
@@ -267,12 +266,13 @@ const getBaskeTotal = () => {
 }
 
 const resetBasket = async () => {
+  basketStore.value = {}
+
   if (!user.value) {
     return
   }
-  const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
-  await setDoc(userRef, { basket: {} }, { merge: true })
-  clearBasketStore()
+  const basketRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+  await updateDoc(basketRef, { basket: deleteField() })
 }
 
 const isLogin = (path: string) => {
