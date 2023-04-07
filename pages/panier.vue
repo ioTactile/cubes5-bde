@@ -204,6 +204,8 @@ const pay = async () => {
       const stripe = await loadStripe(config.public.STRIPE_API_PK)
       if (!stripe) { throw new Error('Erreur fatal') }
       await stripe.redirectToCheckout({ sessionId: response.data.sessionId })
+    } else if (response.data.orderId) {
+      navigateTo('/success')
     }
   } finally {
     loading.value = false
