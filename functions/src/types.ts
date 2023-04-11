@@ -79,6 +79,9 @@ export type Order = {
     quantity: number
   }[]
   methods: "card" | "cash"
+  paymentStatus?: string
+  status: "pending" | "paid" | "collected" | "canceled"
+  qrCodeUrl?: string
   creationDate: Timestamp
   updateDate: Timestamp
 }

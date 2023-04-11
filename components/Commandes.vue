@@ -10,21 +10,17 @@
         <tr>
           <th>Commande</th>
           <th>Date</th>
-          <th>Client</th>
           <th>Etat</th>
           <th>Type</th>
           <th>Total</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(order, i) in orders" :key="order.id" :style="`cursor: pointer`" @click="navigateTo(`/admin/commandes/${order.id}`)">
+        <tr v-for="(order, i) in orders" :key="order.id" :style="`cursor: pointer`" @click="navigateTo(`/profil/commandes/${order.id}`)">
           <td>
             {{ orders.length - i }}
           </td>
           <td>{{ dateFormatter(order.creationDate) }}</td>
-          <td>
-            {{ orderNames(order) }}
-          </td>
           <td>
             {{ orderStatus(order.status) }}
           </td>
@@ -44,11 +40,9 @@
 </template>
 
 <script lang="ts" setup>
-import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { collection, getDocs, where, orderBy, query } from 'firebase/firestore'
 import { useFirestore, useCurrentUser } from 'vuefire'
 import { LocalOrderType, orderConverter } from '~/stores'
-
-definePageMeta({ layout: 'admin' })
 
 const db = useFirestore()
 const user = useCurrentUser()
@@ -57,7 +51,7 @@ const orders = ref<LocalOrderType>([])
 onMounted(async () => {
   if (!user.value) { navigateTo('/') }
   const ordersRef = collection(db, 'orders').withConverter(orderConverter)
-  const ordersQuery = query(ordersRef, orderBy('creationDate', 'desc'))
+  const ordersQuery = query(ordersRef, where('userId', '==', user.value.uid), orderBy('creationDate', 'desc'))
   const ordersDocs = await getDocs(ordersQuery)
   orders.value = ordersDocs.docs.map(doc => doc.data())
 })
@@ -92,9 +86,5 @@ const orderStatus = (status: string) => {
     default:
       return 'Inconnu'
   }
-}
-
-const orderNames = (order: LocalOrderType) => {
-  return (order.userInformations.firstName).charAt(0) + '. ' + order.userInformations.lastName
 }
 </script>

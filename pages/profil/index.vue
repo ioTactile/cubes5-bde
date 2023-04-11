@@ -105,10 +105,10 @@
             </v-card>
           </v-window-item>
           <v-window-item value="commandes">
-            commandes
+            <Commandes />
           </v-window-item>
           <v-window-item value="favoris">
-            favoris
+            <Favoris />
           </v-window-item>
         </v-window>
       </v-col>

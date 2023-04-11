@@ -95,6 +95,10 @@ import { productConverter, LocalProductType, userConverter } from '~/stores'
 import { useBasketStore } from '~/stores/basket'
 
 type BasketItem = LocalProductType & { amount: number }
+type createCheckoutSession = {
+  sessionId?: string
+  orderId?: string
+}
 
 const config = useRuntimeConfig()
 const functions = useFirebaseFunctions()
@@ -119,6 +123,7 @@ onMounted(async () => {
   const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
   const userDoc = await getDoc(userRef)
   const userData = userDoc.data()
+  if (!userData) { return }
   firstName.value = userData.firstName
   lastName.value = userData.lastName
 })
@@ -192,7 +197,7 @@ const pay = async () => {
   }, { merge: true })
 
   try {
-    const response = await functions<unknown, string>('createCheckoutSession')({
+    const response = await functions<unknown, createCheckoutSession>('createCheckoutSession')({
       basket: basketStore.value,
       firstName: firstName.value,
       lastName: lastName.value,

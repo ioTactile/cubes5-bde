@@ -88,11 +88,13 @@ export const createCheckoutSession = functions
               products: products.map((product) => ({
                 id: product.id,
                 name: product.name,
-                price: product.price,
+                price: (product.price || 0),
                 image: product.image,
                 quantity: product.quantity,
               })),
               methods: data.paymentMethod,
+              paymentStatus: session.payment_status,
+              status: "pending",
               creationDate: Timestamp.now(),
               updateDate: Timestamp.now(),
             });
@@ -111,11 +113,12 @@ export const createCheckoutSession = functions
           products: products.map((product) => ({
             id: product.id,
             name: product.name,
-            price: product.price,
+            price: (product.price || 0),
             image: product.image,
             quantity: product.quantity,
           })),
           methods: data.paymentMethod,
+          status: "pending",
           creationDate: Timestamp.now(),
           updateDate: Timestamp.now(),
         });

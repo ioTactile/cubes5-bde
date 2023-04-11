@@ -24,5 +24,10 @@ export default defineNuxtConfig({
       measurementId: 'G-420TF53Z71'
     },
     admin: { serviceAccount }
+  },
+  runtimeConfig: {
+    public: {
+      STRIPE_API_PK: 'pk_test_51MuGAEEIYaTCTNVJL0ofelSgKqOCcCrfCzgxWA5SFNbjwwPdABhTj4arg41HYYbw0iBMIZmFnCVasxeLtYhIXMrB00bFytXDaZ'
+    }
   }
 })
