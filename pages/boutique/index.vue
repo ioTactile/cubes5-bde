@@ -84,7 +84,7 @@
             align-self="center"
             class="ma-1 d-flex justify-center"
           >
-            <BoutiqueProductTemplate :product="product" />
+            <boutique-product-template :product="product" />
           </v-col>
         </v-row>
       </v-col>

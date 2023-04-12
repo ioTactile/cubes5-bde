@@ -1,12 +1,12 @@
 <template>
   <div>
     <div>
-      <v-btn @click="dialog = true">
+      <v-btn color="buttonBack" @click="dialog = true">
         Créer un admin
       </v-btn>
     </div>
 
-    <v-table class="mt-4" height="60vh">
+    <v-table class="mt-4" :height="users.length > 13 ? '60vh' : ''">
       <thead>
         <tr>
           <th>E-mail</th>

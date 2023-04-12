@@ -2,7 +2,7 @@
   <div>
     <v-app-bar color="background" elevation="0" height="80">
       <v-app-bar-nav-icon
-        v-if="!mdAndUp || (admin && adminUser)"
+        v-if="!mdAndUp || (!smAndUp && admin && adminUser)"
         class="mr-md-4"
         @click.stop="drawer = !drawer"
       />
@@ -166,19 +166,20 @@ import { useFirestore, useCurrentUser } from 'vuefire'
 import { useDisplay } from 'vuetify'
 import { LocalProductType, userConverter, productConverter } from '~/stores'
 import { useBasketStore } from '~/stores/basket'
+import { useWishListStore } from '~/stores/wishList'
 
 type BasketItem = LocalProductType & { amount: number }
 
 const db = useFirestore()
 const user = useCurrentUser()
-const store = useBasketStore()
-const { basket: basketStore } = storeToRefs(store)
-// const { updateBasket: updateBasketStore } = store
-const { mdAndUp } = useDisplay()
+const basketStoreRef = useBasketStore()
+const wishListStoreRef = useWishListStore()
+const { basket: basketStore } = storeToRefs(basketStoreRef)
+const { wishList: wishListStore } = storeToRefs(wishListStoreRef)
+const { mdAndUp, smAndUp } = useDisplay()
 
 const login = ref(false)
 const adminUser = ref(false)
-const wishNb = ref(0)
 const drawer = ref(false)
 const basketDrawer = ref(false)
 const basket = ref<BasketItem[]>([])
@@ -231,7 +232,8 @@ onMounted(async () => {
   const userDoc = await getDoc(userRef)
   const userFetched = userDoc.data()
   basketStore.value = { ...(userFetched?.basket || {}), ...basketStore.value }
-  wishNb.value = userFetched?.wishList?.length || 0
+  wishListStore.value = { ...(userFetched?.wishList || []), ...wishListStore.value }
+  // wishNb.value = userFetched?.wishList?.length || 0
 
   const { claims } = await getIdTokenResult(user.value, true)
   adminUser.value = claims.admin
@@ -257,6 +259,7 @@ const basketItems = await getBasket()
 basket.value = basketItems
 
 const basketNb = computed(() => Object.keys(basketStore.value).length)
+const wishNb = computed(() => wishListStore.value.length)
 
 const getBaskeTotal = () => {
   const total = basket.value.reduce((acc, item) => {

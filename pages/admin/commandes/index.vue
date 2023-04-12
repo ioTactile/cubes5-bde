@@ -52,7 +52,7 @@ definePageMeta({ layout: 'admin' })
 
 const db = useFirestore()
 const user = useCurrentUser()
-const orders = ref<LocalOrderType>([])
+const orders = ref<LocalOrderType[]>([])
 
 onMounted(async () => {
   if (!user.value) { navigateTo('/') }

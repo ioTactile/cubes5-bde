@@ -1,5 +1,7 @@
 <template>
-  <div>Interface d'administration</div>
+  <div class="text-center text-headline text-h3">
+    Interface d'administration
+  </div>
 </template>
 
 <script lang="ts" setup>

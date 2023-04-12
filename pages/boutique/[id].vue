@@ -76,14 +76,17 @@ import {
 import { storeToRefs } from 'pinia'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import { useBasketStore } from '~/stores/basket'
+import { useWishListStore } from '~/stores/wishList'
 import { productConverter, userConverter } from '~/stores'
 
 const user = useCurrentUser()
 const db = useFirestore()
 const route = useRoute()
-const store = useBasketStore()
-const { basket } = storeToRefs(store)
-const { updateBasket: updateBasketStore } = store
+const basketStoreRef = useBasketStore()
+const wishlistStoreRef = useWishListStore()
+const { basket } = storeToRefs(basketStoreRef)
+const { updateBasket: updateBasketStore } = basketStoreRef
+const { updateWishList: updateWishListStore } = wishlistStoreRef
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 const productQuery = query(
@@ -114,24 +117,35 @@ const inBasket = computed(() => basket.value[product.id])
 watch(inBasket, value => (quantity.value = value))
 
 const addToCart = async () => {
+  loading.value = true
+
   updateBasketStore({
     productId: product.id,
     quantity: quantity.value
   })
 
-  if (!user.value) {
-    return
+  if (!user.value) { return }
+
+  try {
+    const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+    await setDoc(
+      userRef,
+      { basket: { [product.id]: quantity.value } },
+      { merge: true }
+    )
+  } finally {
+    loading.value = false
   }
-  const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
-  await setDoc(
-    userRef,
-    { basket: { [product.id]: quantity.value } },
-    { merge: true }
-  )
 }
 
 const addToWishList = async () => {
   loading.value = true
+
+  updateWishListStore({
+    productId: product.id,
+    inWishList: isWishListed.value
+  })
+
   if (!user.value) { return }
 
   try {

@@ -76,7 +76,7 @@
             :key="productItem.id"
             class="ma-1 d-flex justify-center"
           >
-            <AdminProductTemplate
+            <admin-product-template
               :product="productItem"
               @edit="edit(productItem)"
             />
@@ -159,7 +159,7 @@ import {
   deleteObject,
   getDownloadURL
 } from 'firebase/storage'
-import { useFirebaseStorage, useStorageFile } from 'vuefire'
+import { useFirestore, useFirebaseStorage, useStorageFile } from 'vuefire'
 import { VForm } from 'vuetify/components'
 import { productConverter, LocalProductType } from '~/stores'
 
@@ -211,6 +211,12 @@ const products = ref(await getProducts())
 
 watch([selectedCategory], async () => {
   products.value = await getProducts()
+})
+
+watch(dialog, (val) => {
+  if (!val) {
+    reset()
+  }
 })
 
 const sortedProducts = computed(() => {
@@ -316,9 +322,9 @@ const edit = (productItem: LocalProductType) => {
 const reset = () => {
   id.value = null
   name.value = ''
+  description.value = ''
   price.value = 0
   quantity.value = 0
-  description.value = ''
   image.value = []
   category.value = ''
   creationDate.value = new Date(Date.now())
