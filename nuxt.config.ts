@@ -30,4 +30,7 @@ export default defineNuxtConfig({
       STRIPE_API_PK: 'pk_test_51MuGAEEIYaTCTNVJL0ofelSgKqOCcCrfCzgxWA5SFNbjwwPdABhTj4arg41HYYbw0iBMIZmFnCVasxeLtYhIXMrB00bFytXDaZ'
     }
   }
+  // experimental: {
+  //   viewTransition: true
+  // }
 })
