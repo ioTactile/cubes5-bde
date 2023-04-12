@@ -267,7 +267,7 @@ const saveProduct = async () => {
     await setDoc(productRef, {
       id: id.value,
       name: name.value!,
-      description: description.value!,
+      description: description.value || '',
       price: price.value!,
       quantity: quantity.value!,
       image: {
