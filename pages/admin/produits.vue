@@ -56,14 +56,40 @@
               </v-expansion-panel-title>
               <v-expansion-panel-text>
                 <v-range-slider
+                  v-model="priceRange"
                   color="buttonText"
                   step="0.1"
-                  thumb-label
                   track-size="3"
                   thumb-size="15"
-                  :min="1"
+                  :min="0"
                   :max="5"
-                />
+                  class="ma-0"
+                >
+                  <template #prepend>
+                    <v-text-field
+                      :model-value="priceRange[0]"
+                      hide-details
+                      single-line
+                      type="number"
+                      variant="outlined"
+                      density="compact"
+                      :style="`width: 70px`"
+                      @change="$set(priceRange, 0, $event)"
+                    />
+                  </template>
+                  <template #append>
+                    <v-text-field
+                      :model-value="priceRange[1]"
+                      hide-details
+                      single-line
+                      type="number"
+                      variant="outlined"
+                      :style="`width: 70px`"
+                      density="compact"
+                      @change="$set(priceRange, 1, $event)"
+                    />
+                  </template>
+                </v-range-slider>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -72,7 +98,7 @@
       <v-col cols="6" sm="7" md="9">
         <v-row no-gutters justify="center">
           <v-col
-            v-for="productItem in sortedProducts"
+            v-for="productItem in filteredProducts"
             :key="productItem.id"
             class="ma-1 d-flex justify-center"
           >
@@ -171,6 +197,7 @@ const storage = useFirebaseStorage()
 const dialog = ref(false)
 const sortBy = ref<string | null>(null)
 const selectedCategory = ref<string | null>(null)
+const priceRange = ref<number[]>([0, 5])
 const id = ref<string | null>(null)
 const name = ref<string>()
 const price = ref<number>()
@@ -222,9 +249,9 @@ watch(dialog, (val) => {
 const sortedProducts = computed(() => {
   let sorted = [...products.value]
   switch (sortBy.value) {
-    // case 'latest':
-    //   sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
-    //   break
+    case 'latest':
+      sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
+      break
     case 'quantity':
       sorted = sorted.slice().sort((a, b) => b.quantity - a.quantity)
       break
@@ -240,11 +267,17 @@ const sortedProducts = computed(() => {
     case 'priceDesc':
       sorted = sorted.slice().sort((a, b) => b.price - a.price)
       break
-    // default:
-    //   sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
-    //   break
+    default:
+      sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
+      break
   }
   return sorted
+})
+
+const filteredProducts = computed(() => {
+  return sortedProducts.value.filter(
+    product => product.price >= priceRange.value[0] && product.price <= priceRange.value[1]
+  )
 })
 
 const createProduct = () => {
@@ -334,3 +367,9 @@ const reset = () => {
   selectedCategory.value = null
 }
 </script>
+
+<style class="scoped">
+.v-expansion-panel-text__wrapper {
+  padding: 10px;
+}
+</style>
