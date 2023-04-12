@@ -1,7 +1,7 @@
 <template>
-  <div class="text-center text-headline text-h3">
+  <v-container class="text-center text-headline text-h3">
     Interface d'administration
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

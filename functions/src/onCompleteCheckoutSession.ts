@@ -2,10 +2,16 @@ import * as functions from "firebase-functions";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {defineSecret} from "firebase-functions/params";
 import Stripe from "stripe";
-import {orderConverter} from "./types.js";
+import {orderConverter, productConverter} from "./types.js";
 
 const stripePrivateKey = defineSecret("STRIPE_API_SK");
 const stripeWebhook = defineSecret("STRIPE_API_WHSEC");
+
+type ProductFromCheckout = {
+  id: string
+  quantity: number
+  soldNb: number
+}
 
 export const onCompleteCheckoutSession = functions
     .runWith({
@@ -50,6 +56,7 @@ export const onCompleteCheckoutSession = functions
 
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
+
         const orderRef = firestore.collection("orders")
             .withConverter(orderConverter).doc(session.id);
         await orderRef.update({
@@ -58,8 +65,24 @@ export const onCompleteCheckoutSession = functions
           updateDate: Timestamp.now(),
         //   qrCodeUrl,
         });
-      }
 
+        const products = JSON.parse(session.metadata?.products || "[]");
+
+        await Promise.all(products.map(async (product: ProductFromCheckout) => {
+          const productRef = firestore.collection("products")
+              .doc(product.id).withConverter(productConverter);
+          const productDoc = await productRef.get();
+          if (productDoc.exists) {
+            const productData = productDoc.data();
+            if (productData) {
+              await productRef.update({
+                soldNb: (productData.soldNb || 0) + product.quantity,
+                quantity: (productData.quantity || 0) - product.quantity,
+              });
+            }
+          }
+        }));
+      }
 
       res.status(200).send("OK");
     });

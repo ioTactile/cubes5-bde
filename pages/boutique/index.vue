@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-row class="mx-4">
+  <v-container>
+    <v-row>
       <v-col cols="12">
         <h2 class="text-center text-h4 font-weight-bold text-headline mb-12">
           Boutique
@@ -89,7 +89,7 @@
         </v-row>
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

@@ -34,7 +34,7 @@
           >
             {{ inBasket ? 'Modifier' : 'Ajouter' }}
           </v-btn>
-          <v-btn color="buttonBack" block rounded="0">
+          <v-btn color="buttonBack" block rounded="0" @click="addToCartAndNavigateToBasket('/panier')">
             Commander et payer
           </v-btn>
         </div>
@@ -76,7 +76,7 @@ import {
 import { storeToRefs } from 'pinia'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import { useBasketStore } from '~/stores/basket'
-import { useWishListStore } from '~/stores/wishList'
+import { useWishListStore } from '~/stores/wishlist'
 import { productConverter, userConverter } from '~/stores'
 
 const user = useCurrentUser()
@@ -138,6 +138,11 @@ const addToCart = async () => {
   }
 }
 
+const addToCartAndNavigateToBasket = async (path: string) => {
+  await addToCart()
+  navigateTo(path)
+}
+
 const addToWishList = async () => {
   loading.value = true
 
@@ -150,14 +155,21 @@ const addToWishList = async () => {
 
   try {
     const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
+    const productRef = doc(productsRef, product.id).withConverter(productConverter)
     if (!isWishListed.value) {
       await setDoc(userRef, {
         wishList: arrayUnion(product.id)
+      }, { merge: true })
+      await setDoc(productRef, {
+        wishListNb: product.wishListNb + 1
       }, { merge: true })
       isWishListed.value = true
     } else {
       await setDoc(userRef, {
         wishList: arrayRemove(product.id)
+      }, { merge: true })
+      await setDoc(productRef, {
+        wishListNb: product.wishListNb < 0 ? 0 : product.wishListNb - 1
       }, { merge: true })
       isWishListed.value = false
     }

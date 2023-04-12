@@ -1,7 +1,6 @@
 <template>
-  <div>
+  <v-container>
     <v-table
-      class="mx-4"
       hover
       fixed-header
       :height="orders.length > 10 ? '60vh' : ''"
@@ -40,7 +39,7 @@
         </tr>
       </tbody>
     </v-table>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

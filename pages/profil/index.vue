@@ -9,9 +9,9 @@
           <v-tab value="commandes" color="buttonBack" variant="elevated">
             Commandes
           </v-tab>
-          <v-tab value="favoris" color="buttonBack" variant="elevated">
+          <!-- <v-tab value="favoris" color="buttonBack" variant="elevated">
             Favoris
-          </v-tab>
+          </v-tab> -->
         </v-tabs>
       </v-col>
       <v-col cols="12" md="9">
@@ -107,9 +107,9 @@
           <v-window-item value="commandes">
             <profil-commandes />
           </v-window-item>
-          <v-window-item value="favoris">
+          <!-- <v-window-item value="favoris">
             <profil-favoris />
-          </v-window-item>
+          </v-window-item> -->
         </v-window>
       </v-col>
     </v-row>

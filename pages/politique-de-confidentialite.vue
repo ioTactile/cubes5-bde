@@ -1,3 +1,3 @@
 <template>
-  <div>Hi</div>
+  <v-container>Hi</v-container>
 </template>

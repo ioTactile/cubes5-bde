@@ -1,5 +1,5 @@
 <template>
-  <div v-if="order">
+  <v-container v-if="order">
     <v-card rounded="0" elevation="0">
       <v-card-title>
         <h2 class="text-h5 text-center">
@@ -14,7 +14,7 @@
         </v-row>
       </v-card-text>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

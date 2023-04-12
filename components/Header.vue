@@ -166,7 +166,7 @@ import { useFirestore, useCurrentUser } from 'vuefire'
 import { useDisplay } from 'vuetify'
 import { LocalProductType, userConverter, productConverter } from '~/stores'
 import { useBasketStore } from '~/stores/basket'
-import { useWishListStore } from '~/stores/wishList'
+import { useWishListStore } from '~/stores/wishlist'
 
 type BasketItem = LocalProductType & { amount: number }
 

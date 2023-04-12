@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-row class="mx-4">
+  <v-container>
+    <v-row>
       <v-col cols="12" md="9">
         <span class="text-headline font-weight-bold pl-1">Mon panier</span>
         <v-divider color="stroke" class="my-2" />
@@ -81,7 +81,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

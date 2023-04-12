@@ -72,6 +72,13 @@ export const createCheckoutSession = functions
           currency: "eur",
           success_url: `${context.rawRequest.headers.origin}/success`,
           cancel_url: `${context.rawRequest.headers.origin}/panier`,
+          metadata: {
+            products: JSON.stringify(products.map((product) => ({
+              id: product.id,
+              quantity: product.quantity,
+              soldNb: product.soldNb,
+            }))),
+          },
         };
 
         session = await stripe.checkout.sessions.create(checkoutParams);
@@ -122,6 +129,21 @@ export const createCheckoutSession = functions
           creationDate: Timestamp.now(),
           updateDate: Timestamp.now(),
         });
+
+        await Promise.all(products.map(async (product) => {
+          const productRef = firestore.collection("products")
+              .doc(product.id).withConverter(productConverter);
+          const productDoc = await productRef.get();
+          if (productDoc.exists) {
+            const productData = productDoc.data();
+            if (productData) {
+              await productRef.update({
+                soldNb: (productData.soldNb || 0) + product.quantity,
+                quantity: (productData.quantity || 0) - product.quantity,
+              });
+            }
+          }
+        }));
       }
 
       return {sessionId: session?.id, orderId: orderRef?.id};

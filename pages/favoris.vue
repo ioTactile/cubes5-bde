@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-row class="mx-4">
+  <v-container>
+    <v-row>
       <v-col
         v-for="product in products"
         :key="product.id"
@@ -10,7 +10,7 @@
         <BoutiqueProductTemplate :product="product" />
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup async>

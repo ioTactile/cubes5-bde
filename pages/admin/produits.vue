@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-row>
       <v-col cols="6" sm="5" md="3">
         <v-btn
@@ -139,7 +139,7 @@
         </v-form>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

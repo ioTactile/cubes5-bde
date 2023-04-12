@@ -1,7 +1,7 @@
 <template>
   <v-app class="overflow-x-hidden">
     <Header admin />
-    <v-main class="background ma-4">
+    <v-main class="background">
       <slot />
     </v-main>
     <Footer />
@@ -12,19 +12,11 @@
 </template>
 
 <script lang="ts" setup>
-// import { getIdTokenResult } from '@firebase/auth'
+import { useCurrentUser } from 'vuefire'
+
+const user = useCurrentUser()
 
 onBeforeMount(async () => {
-  const auth = useFirebaseAuth()!
-  await new Promise((resolve) => {
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        return resolve(await navigateTo('/'))
-      }
-      // const { claims } = await getIdTokenResult(user, true)
-      // if (!claims.admin) { return resolve(await navigateTo('/')) }
-      return resolve(null)
-    })
-  })
+  if (!user.value) { return await navigateTo('/') }
 })
 </script>

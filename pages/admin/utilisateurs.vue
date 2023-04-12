@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <div>
       <v-btn color="buttonBack" @click="dialog = true">
         Créer un admin
@@ -75,7 +75,7 @@
         </v-form>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts" async setup>
