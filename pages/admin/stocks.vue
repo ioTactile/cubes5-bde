@@ -23,13 +23,16 @@
             <v-text-field
               v-model="product.quantity"
               variant="outlined"
+              density="compact"
               hide-details
-              class="my-2 pa-0"
+              class="d-flex align-center my-2 quantity-field"
             >
-              <template #append-inner>
+              <template #append>
                 <v-btn
                   variant="text"
                   icon="mdi-update"
+                  class="pb-2 ma-0"
+                  :size="xs ? 'small' : 'medium'"
                   @click="updateQuantity(product.id, product.quantity)"
                 />
               </template>
@@ -45,11 +48,13 @@
 <script lang="ts" setup async>
 import { collection, getDocs, setDoc, doc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
+import { useDisplay } from 'vuetify'
 import { productConverter } from '~/stores'
 
 definePageMeta({ layout: 'admin' })
 
 const db = useFirestore()
+const { xs } = useDisplay()
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
 const productsDocs = await getDocs(productsRef)
@@ -68,7 +73,7 @@ const updateQuantity = async (productId: string, quantityUpdated: number) => {
 </script>
 
 <style scoped>
-.v-field__append-inner {
-  padding-top: 0 !important;
+.quantity-field {
+  min-width: 120px !important;
 }
 </style>
