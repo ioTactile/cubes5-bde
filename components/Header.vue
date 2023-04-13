@@ -224,6 +224,11 @@ const adminItems = [
   }
 ]
 
+watch(basketStore, async () => {
+  const basketItems = await getBasket()
+  basket.value = basketItems
+})
+
 onMounted(async () => {
   if (!user.value) {
     return
