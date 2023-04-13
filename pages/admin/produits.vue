@@ -74,7 +74,7 @@
                       variant="outlined"
                       density="compact"
                       :style="`width: 70px`"
-                      @change="$set(priceRange, 0, $event)"
+                      @change="setPriceRange(0, $event)"
                     />
                   </template>
                   <template #append>
@@ -86,7 +86,7 @@
                       variant="outlined"
                       :style="`width: 70px`"
                       density="compact"
-                      @change="$set(priceRange, 1, $event)"
+                      @change="setPriceRange(1, $event)"
                     />
                   </template>
                 </v-range-slider>
@@ -365,6 +365,10 @@ const reset = () => {
   dialog.value = false
   sortBy.value = null
   selectedCategory.value = null
+}
+
+const setPriceRange = (index: number, value: number) => {
+  priceRange.value[index] = value
 }
 </script>
 

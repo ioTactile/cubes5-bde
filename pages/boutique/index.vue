@@ -71,7 +71,7 @@
                     variant="outlined"
                     density="compact"
                     :style="`width: 70px`"
-                    @change="$set(priceRange, 0, $event)"
+                    @change="setPriceRange(0, $event)"
                   />
                 </template>
                 <template #append>
@@ -83,7 +83,7 @@
                     variant="outlined"
                     :style="`width: 70px`"
                     density="compact"
-                    @change="$set(priceRange, 1, $event)"
+                    @change="setPriceRange(1, $event)"
                   />
                 </template>
               </v-range-slider>
@@ -195,4 +195,8 @@ const filteredProducts = computed(() => {
     product => product.price >= priceRange.value[0] && product.price <= priceRange.value[1]
   )
 })
+
+const setPriceRange = (index: number, value: number) => {
+  priceRange.value[index] = value
+}
 </script>
