@@ -166,7 +166,7 @@ const sortedProducts = computed(() => {
   let sorted = [...products.value]
   switch (sortBy.value) {
     case 'latest':
-      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
+      sorted = sorted.sort((a, b) => Date.parse(b.creationDate.toString()) - Date.parse(a.creationDate.toString()))
       break
     case 'quantity':
       sorted = sorted.sort((a, b) => b.quantity - a.quantity)
@@ -184,7 +184,7 @@ const sortedProducts = computed(() => {
       sorted = sorted.sort((a, b) => b.price - a.price)
       break
     default:
-      sorted = sorted.sort((a, b) => b.creationDate - a.creationDate)
+      sorted = sorted.sort((a, b) => Date.parse(b.creationDate.toString()) - Date.parse(a.creationDate.toString()))
       break
   }
   return sorted

@@ -250,25 +250,25 @@ const sortedProducts = computed(() => {
   let sorted = [...products.value]
   switch (sortBy.value) {
     case 'latest':
-      sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
+      sorted = sorted.sort((a, b) => Date.parse(b.creationDate.toString()) - Date.parse(a.creationDate.toString()))
       break
     case 'quantity':
-      sorted = sorted.slice().sort((a, b) => b.quantity - a.quantity)
+      sorted = sorted.sort((a, b) => b.quantity - a.quantity)
       break
     case 'nameAsc':
-      sorted = sorted.slice().sort((a, b) => a.name.localeCompare(b.name))
+      sorted = sorted.sort((a, b) => a.name.localeCompare(b.name))
       break
     case 'nameDesc':
-      sorted = sorted.slice().sort((a, b) => b.name.localeCompare(a.name))
+      sorted = sorted.sort((a, b) => b.name.localeCompare(a.name))
       break
     case 'priceAsc':
-      sorted = sorted.slice().sort((a, b) => a.price - b.price)
+      sorted = sorted.sort((a, b) => a.price - b.price)
       break
     case 'priceDesc':
-      sorted = sorted.slice().sort((a, b) => b.price - a.price)
+      sorted = sorted.sort((a, b) => b.price - a.price)
       break
     default:
-      sorted = sorted.slice().sort((a, b) => b.creationDate - a.creationDate)
+      sorted = sorted.sort((a, b) => Date.parse(b.creationDate.toString()) - Date.parse(a.creationDate.toString()))
       break
   }
   return sorted
