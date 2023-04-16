@@ -88,7 +88,6 @@ definePageMeta({ layout: 'admin' })
 
 const db = useFirestore()
 const functions = useFirebaseFunctions()
-
 const dialog = ref(false)
 const email = ref<string>()
 const password = ref<string>()
@@ -96,41 +95,35 @@ const role = ref<'admin' | null>(null)
 const loading = ref(false)
 const removing = ref<string | null>(null)
 const form = ref<VForm>()
-
 const usersRef = collection(db, 'users').withConverter(userConverter)
 const usersDocs = await getDocs(usersRef)
 const users = ref(usersDocs.docs.map(doc => doc.data()))
-
 const createUser = async () => {
   if (
     !(await form.value?.validate())?.valid ||
-    !email.value ||
-    !password.value
+      !email.value ||
+      !password.value
   ) {
     return
   }
   loading.value = true
-
   try {
     const { data } = await functions<
-      { email: string; password: string; role: { admin: true } },
-      LocalUserType
-    >('createAdmin')({
-      email: email.value,
-      password: password.value,
-      role: { admin: true }
-    })
-
+        { email: string; password: string; role: { admin: true } },
+        LocalUserType
+      >('createAdmin')({
+        email: email.value,
+        password: password.value,
+        role: { admin: true }
+      })
     users.value.push(data)
     dialog.value = false
   } finally {
     loading.value = false
   }
 }
-
 const removeUser = async (id: string) => {
   removing.value = id
-
   try {
     await functions('removeAdmin')({ id })
     users.value = users.value.filter(user => user.id !== id)
@@ -138,7 +131,6 @@ const removeUser = async (id: string) => {
     removing.value = null
   }
 }
-
 function getRole (role: { admin: true } | undefined) {
   if (!role) {
     return 'Utilisateur'
