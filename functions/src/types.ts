@@ -7,9 +7,9 @@ import {
 export {Timestamp};
 
 export type Image = {
-    name: string
-    url: string
-  }
+  name: string
+  url: string
+}
 
 export const userConverter = {
   toFirestore: (user: User): DocumentData => user,
@@ -19,29 +19,69 @@ export const userConverter = {
 };
 
 export type User = {
-    id: string
-    email: string
-    firstName?: string
-    lastName?: string
-    role?: { admin: true }
-    creationDate: Timestamp
-    updateDate: Timestamp
-  }
+  id: string
+  email: string
+  creationDate: Timestamp
+  updateDate: Timestamp
+  role?: { admin: true }
+  firstName?: string
+  lastName?: string
+  basket?: Record<string, number>
+  wishList?: string[]
+}
 
-export const articleConverter = {
-  toFirestore: (article: Article): DocumentData => article,
-  fromFirestore(snapshot: QueryDocumentSnapshot<Article>): Article {
+export const productConverter = {
+  toFirestore: (product: Product): DocumentData => product,
+  fromFirestore(snapshot: QueryDocumentSnapshot<Product>): Product {
     return snapshot.data();
   },
 };
 
-export type Article = {
-    id: string
-    images: Image[]
-    title: string
-    content: string
-    description: string
-    slug: string
-    creationDate: Timestamp
-    updateDate: Timestamp
+export type Product = {
+  id: string
+  name: string
+  description: string
+  price: number
+  quantity: number
+  image?: Image
+  category: string
+  slug: string
+  soldNb: number
+  wishListNb: number
+  creationDate: Timestamp
+  updateDate: Timestamp
+}
+
+export type BasketProduct = Product & {
+  amount: number
+}
+
+export const orderConverter = {
+  toFirestore: (order: Order): DocumentData => order,
+  fromFirestore(snapshot: QueryDocumentSnapshot<Order>): Order {
+    return snapshot.data();
+  },
+};
+
+export type Order = {
+  id: string
+  userId: string
+  userInformations: {
+    firstName: string
+    lastName: string
+    email: string
   }
+  products: {
+    id: string
+    name: string
+    price: number
+    image?: Image
+    quantity: number
+  }[]
+  methods: "card" | "cash"
+  paymentStatus?: string
+  status: "pending" | "paid" | "collected" | "canceled"
+  qrCodeUrl?: string
+  creationDate: Timestamp
+  updateDate: Timestamp
+}
