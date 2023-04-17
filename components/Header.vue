@@ -8,12 +8,11 @@
       />
       <v-spacer class="d-block d-sm-none" />
       <NuxtLink to="/" class="text-decoration-none">
-        <v-app-bar-title
+        <h1
           class="font-weight-bold text-headline text-sm-h5 text-md-h4 ml-sm-12"
-          tag="h1"
         >
           Les délices du campus
-        </v-app-bar-title>
+        </h1>
       </NuxtLink>
       <v-spacer />
       <div v-if="mdAndUp && !admin" class="text-center">
