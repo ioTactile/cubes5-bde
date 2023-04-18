@@ -1,25 +1,14 @@
 <template>
-  <v-snackbar v-model="show" :color="color">
+  <v-snackbar v-model="notification.show" :color="notification.color">
     <div class="text-body-1">
-      {{ message }}
+      {{ notification.content }}
     </div>
     <template #actions>
-      <v-btn color="stroke" icon="mdi-close" @click="show = false" />
+      <v-btn color="stroke" icon="mdi-close" @click="notification.show = false" />
     </template>
   </v-snackbar>
 </template>
 
 <script lang="ts" setup>
-import { useSnackbarStore } from '~/stores/snackbar'
-
-const show = ref(false)
-const message = ref('')
-const color = ref('')
-
-const snackbarStore = useSnackbarStore()
-snackbarStore.$subscribe((_, state) => {
-  message.value = state.content
-  color.value = state.color
-  show.value = true
-})
+const { notification } = useNotifier()
 </script>

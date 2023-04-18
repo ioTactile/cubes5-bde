@@ -85,9 +85,10 @@ import {
 import { FirebaseError } from '@firebase/util'
 import { Timestamp, doc, setDoc } from 'firebase/firestore'
 import { useFirestore, useCurrentUser, useFirebaseAuth } from 'vuefire'
+
 import { userConverter } from '~/stores'
 
-const { $notifier } = useNuxtApp()
+const { notifier } = useNotifier()
 const db = useFirestore()
 const user = useCurrentUser()
 const auth = useFirebaseAuth()
@@ -139,10 +140,10 @@ const login = async () => {
           )
         }
       )
-      $notifier({ content: 'Inscription réussie', color: 'success' })
+      notifier({ content: 'Inscription réussie', color: 'success' })
     } else if (forgotPassword.value) {
       await sendPasswordResetEmail(auth, email.value)
-      $notifier({
+      notifier({
         content: 'Un email de réinitialisation a été envoyé',
         color: 'success'
       })
@@ -179,7 +180,7 @@ const login = async () => {
         errMessage = 'une erreur est survenue'
         break
     }
-    $notifier({ content: errMessage, color: 'error', error })
+    notifier({ content: errMessage, color: 'error', error })
   } finally {
     loading.value = null
   }

@@ -59,7 +59,7 @@
           <v-icon icon="mdi-heart" />
         </v-badge>
       </v-btn>
-      <v-btn v-if="!admin" icon="mdi-cart" size="large" @click="isBasket()">
+      <v-btn v-if="!admin" icon="mdi-cart" size="large" @click.stop="basketDrawer = !basketDrawer">
         <v-badge
           :model-value="basketNb > 0"
           :content="basketNb"
@@ -290,11 +290,11 @@ const isLogin = (path: string) => {
   }
 }
 
-const isBasket = () => {
-  if (!user.value) {
-    login.value = true
-  } else {
-    basketDrawer.value = !basketDrawer.value
-  }
-}
+// const isBasket = () => {
+//   if (!user.value) {
+//     login.value = true
+//   } else {
+//     basketDrawer.value = !basketDrawer.value
+//   }
+// }
 </script>
