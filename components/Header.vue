@@ -9,7 +9,7 @@
       <v-spacer class="d-block d-sm-none" />
       <NuxtLink to="/" class="text-decoration-none">
         <h1
-          class="font-weight-bold text-headline text-sm-h5 text-md-h4 ml-sm-12"
+          class="font-weight-bold text-headline text-truncate text-h6 text-md-h5 ml-md-4"
         >
           Les délices du campus
         </h1>
@@ -43,9 +43,9 @@
           Utilisateurs
         </v-btn>
       </div>
-      <v-btn icon="mdi-account" size="large" @click="isLogin('/profil')" />
+      <v-btn v-if="smAndUp" icon="mdi-account" size="large" @click="isLogin('/profil')" />
       <v-btn
-        v-if="!admin"
+        v-if="!admin && smAndUp"
         variant="text"
         icon="mdi-heart"
         size="large"
@@ -59,7 +59,7 @@
           <v-icon icon="mdi-heart" />
         </v-badge>
       </v-btn>
-      <v-btn v-if="!admin" icon="mdi-cart" size="large" @click="isBasket()">
+      <v-btn v-if="!admin" icon="mdi-cart" size="large" @click.stop="basketDrawer = !basketDrawer">
         <v-badge
           :model-value="basketNb > 0"
           :content="basketNb"
@@ -72,6 +72,18 @@
 
     <v-navigation-drawer v-model="drawer" disable-resize-watcher width="250">
       <v-list v-if="!admin" nav class="pa-0">
+        <template v-if="xs">
+          <v-list-item
+            v-for="(item, i) in smItems"
+            :key="i"
+            :value="item"
+            :to="item.link"
+            active-color="paragraph"
+            class="text-center"
+          >
+            {{ item.title }}
+          </v-list-item>
+        </template>
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
@@ -175,7 +187,7 @@ const basketStoreRef = useBasketStore()
 const wishListStoreRef = useWishListStore()
 const { basket: basketStore } = storeToRefs(basketStoreRef)
 const { wishList: wishListStore } = storeToRefs(wishListStoreRef)
-const { mdAndUp, smAndUp } = useDisplay()
+const { mdAndUp, xs, smAndUp } = useDisplay()
 
 const login = ref(false)
 const adminUser = ref(false)
@@ -197,6 +209,17 @@ const items = [
   {
     title: 'Contact',
     link: '/contact'
+  }
+]
+
+const smItems = [
+  {
+    title: 'Profil',
+    link: '/profil'
+  },
+  {
+    title: 'Favoris',
+    link: '/favoris'
   }
 ]
 
@@ -290,11 +313,11 @@ const isLogin = (path: string) => {
   }
 }
 
-const isBasket = () => {
-  if (!user.value) {
-    login.value = true
-  } else {
-    basketDrawer.value = !basketDrawer.value
-  }
-}
+// const isBasket = () => {
+//   if (!user.value) {
+//     login.value = true
+//   } else {
+//     basketDrawer.value = !basketDrawer.value
+//   }
+// }
 </script>

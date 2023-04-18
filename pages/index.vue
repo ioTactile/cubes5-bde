@@ -31,7 +31,7 @@ import { productConverter } from '~/stores'
 const db = useFirestore()
 
 const productsRef = collection(db, 'products').withConverter(productConverter)
-const productsQuery = query(productsRef, orderBy('updateDate', 'desc'), limit(6))
+const productsQuery = query(productsRef, orderBy('wishListNb', 'desc'), limit(6))
 const productsDocs = await getDocs(productsQuery)
 const products = productsDocs.docs.map(doc => doc.data())
 </script>

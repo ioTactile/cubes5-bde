@@ -62,8 +62,11 @@
     </v-row>
     <v-dialog v-model="dialog" width="450" :persistent="loading">
       <v-card class="pa-2">
-        <v-card-title class="text-center text-h5 text-headline">
-          Informations de paiement
+        <v-card-title class="d-flex align-center text-h5 text-headline">
+          <span class="mr-auto">
+            Informations de paiement
+          </span>
+          <v-btn variant="flat" icon="mdi-close" size="small" @click="dialog=false" />
         </v-card-title>
         <v-card-text>
           <v-form ref="form" @submit.prevent="pay">
@@ -101,6 +104,7 @@ type createCheckoutSession = {
 }
 
 const config = useRuntimeConfig()
+const { notifier } = useNotifier()
 const functions = useFirebaseFunctions()
 const db = useFirestore()
 const user = useCurrentUser()
@@ -183,11 +187,17 @@ const updateBasket = async (product: BasketItem, newQuantity: number) => {
 }
 
 const pay = async () => {
-  if (!(await form.value?.validate())?.valid) { return }
+  if (!(await form.value?.validate())?.valid) {
+    notifier({ content: 'Veuillez remplir tous les champs', color: 'error' })
+    return
+  }
 
   loading.value = true
 
-  if (!user.value) { return }
+  if (!user.value) {
+    notifier({ content: 'Vous devez être connecté pour procéder au paiement', color: 'error' })
+    return
+  }
 
   const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
   await setDoc(userRef, {
