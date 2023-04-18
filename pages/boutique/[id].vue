@@ -6,7 +6,7 @@
       </NuxtLink>
       <span class="text-medium-emphasis"> / {{ product.name }} </span>
       <span>
-        <v-btn variant="text" :loading="loading" icon="mdi-heart" :color="isWishListed ? 'secondary' : ''" @click="addToWishList" />
+        <v-btn variant="text" :loading="wishlistLoading" icon="mdi-heart" :color="isWishListed ? 'secondary' : ''" @click="addToWishList" />
       </span>
     </div>
     <v-row>
@@ -79,6 +79,7 @@ import { useBasketStore } from '~/stores/basket'
 import { useWishListStore } from '~/stores/wishlist'
 import { productConverter, userConverter } from '~/stores'
 
+const { notifier } = useNotifier()
 const user = useCurrentUser()
 const db = useFirestore()
 const route = useRoute()
@@ -101,6 +102,7 @@ const quantity = ref(1)
 const descriptionDetails = ref(false)
 const loading = ref(false)
 const isWishListed = ref(false)
+const wishlistLoading = ref(false)
 
 onMounted(async () => {
   if (!user.value) { return }
@@ -144,14 +146,17 @@ const addToCartAndNavigateToBasket = async (path: string) => {
 }
 
 const addToWishList = async () => {
-  loading.value = true
+  wishlistLoading.value = true
+
+  if (!user.value) {
+    notifier({ content: 'Veuillez vous connecter', color: 'white' })
+    return
+  }
 
   updateWishListStore({
     productId: product.id,
     inWishList: isWishListed.value
   })
-
-  if (!user.value) { return }
 
   try {
     const userRef = doc(db, 'users', user.value.uid).withConverter(userConverter)
@@ -174,7 +179,7 @@ const addToWishList = async () => {
       isWishListed.value = false
     }
   } finally {
-    loading.value = false
+    wishlistLoading.value = false
   }
 }
 </script>

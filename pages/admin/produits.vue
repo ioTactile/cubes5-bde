@@ -211,7 +211,8 @@ const creationDate = ref(new Date(Date.now()))
 const categories = ref([
   { value: 'bonbons', title: 'Bonbons' },
   { value: 'gateaux', title: 'Gâteaux' },
-  { value: 'boisson', title: 'Boisson' }
+  { value: 'boisson', title: 'Boisson' },
+  { value: 'salé', title: 'Salé' }
 ])
 const sorting = ref([
   { value: 'latest', title: 'Plus récent' },
