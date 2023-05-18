@@ -174,7 +174,7 @@ const addToWishList = async () => {
         wishList: arrayRemove(product.id)
       }, { merge: true })
       await setDoc(productRef, {
-        wishListNb: product.wishListNb < 0 ? 0 : product.wishListNb - 1
+        wishListNb: product.wishListNb === 0 ? 0 : product.wishListNb - 1
       }, { merge: true })
       isWishListed.value = false
     }
