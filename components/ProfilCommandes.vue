@@ -71,7 +71,7 @@ const TotalOrderProductsPrice = (order: LocalOrderType) => {
   order.products.forEach((product) => {
     total += product.price * product.quantity
   })
-  return total
+  return numberFormatter(total)
 }
 
 const openOrder = (id: string) => {
@@ -109,5 +109,9 @@ const orderStatus = (status: string) => {
     default:
       return 'Inconnu'
   }
+}
+
+const numberFormatter = (value: number) => {
+  return value.toFixed(2)
 }
 </script>
