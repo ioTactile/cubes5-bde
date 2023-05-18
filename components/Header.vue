@@ -292,7 +292,7 @@ const getBaskeTotal = () => {
   const total = basket.value.reduce((acc, item) => {
     return acc + item.price * item.amount
   }, 0)
-  return total
+  return numberFormatter(total)
 }
 
 const resetBasket = async () => {
@@ -311,6 +311,10 @@ const isLogin = (path: string) => {
   } else {
     navigateTo(path)
   }
+}
+
+const numberFormatter = (value: number) => {
+  return value.toFixed(2)
 }
 
 // const isBasket = () => {

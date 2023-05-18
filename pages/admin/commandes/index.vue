@@ -66,7 +66,7 @@ const TotalOrderProductsPrice = (order: LocalOrderType) => {
   order.products.forEach((product) => {
     total += product.price * product.quantity
   })
-  return total
+  return numberFormatter(total)
 }
 
 const dateFormatter = new Intl.DateTimeFormat('fr', {
@@ -84,8 +84,8 @@ const orderStatus = (status: string) => {
       return 'En attente de paiement'
     case 'paid':
       return 'Payée'
-    case 'delivered':
-      return 'Livrée'
+    case 'collected':
+      return 'Récupérée'
     case 'canceled':
       return 'Annulée'
     default:
@@ -95,5 +95,9 @@ const orderStatus = (status: string) => {
 
 const orderNames = (order: LocalOrderType) => {
   return (order.userInformations.firstName).charAt(0) + '. ' + order.userInformations.lastName
+}
+
+const numberFormatter = (value: number) => {
+  return value.toFixed(2)
 }
 </script>

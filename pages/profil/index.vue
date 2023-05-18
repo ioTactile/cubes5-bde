@@ -9,9 +9,6 @@
           <v-tab value="commandes" color="buttonBack" variant="elevated">
             Commandes
           </v-tab>
-          <!-- <v-tab value="favoris" color="buttonBack" variant="elevated">
-            Favoris
-          </v-tab> -->
         </v-tabs>
       </v-col>
       <v-col cols="12" md="9">
@@ -107,9 +104,6 @@
           <v-window-item value="commandes">
             <profil-commandes />
           </v-window-item>
-          <!-- <v-window-item value="favoris">
-            <profil-favoris />
-          </v-window-item> -->
         </v-window>
       </v-col>
     </v-row>
@@ -122,7 +116,7 @@ import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { userConverter } from '~/stores'
 
-const { $notifier } = useNuxtApp()
+const { notifier } = useNotifier()
 const auth = useFirebaseAuth()
 const user = useCurrentUser()
 const db = useFirestore()
@@ -171,13 +165,13 @@ const updateProfile = async () => {
         { firstName: firstName.value, lastName: lastName.value },
         { merge: true }
       )
-      $notifier({
+      notifier({
         content: 'Profil mis à jour',
         color: 'main'
       })
     }
   } catch (error) {
-    $notifier({
+    notifier({
       content:
         'Une erreur est survenue lors de la mise à jour de vos informations',
       color: 'error',
@@ -200,7 +194,7 @@ const deleteProfile = async () => {
     await deleteDoc(userRef)
     await deleteUser(user.value)
   } catch (error) {
-    $notifier({
+    notifier({
       content: 'Une erreur est survenue lors de la suppression de votre compte',
       color: 'error',
       error
@@ -220,7 +214,7 @@ const logout = async () => {
     await signOut(auth)
     await navigateTo('/')
   } catch (error) {
-    $notifier({
+    notifier({
       content: 'Une erreur est survenue lors de la déconnexion',
       color: 'error',
       error

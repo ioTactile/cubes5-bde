@@ -1,10 +1,6 @@
 <template>
   <v-container>
-    <v-table
-      hover
-      fixed-header
-      :height="products.length > 9 ? '60vh' : ''"
-    >
+    <v-table hover fixed-header :height="products.length > 9 ? '60vh' : ''">
       <thead>
         <tr>
           <th>Produit</th>

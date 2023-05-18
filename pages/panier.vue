@@ -28,7 +28,7 @@
                   class="mt-2"
                   @update:model-value="updateBasket(product, $event || 0)"
                 />
-                <span class="mr-4 my-auto font-weight-bold">{{ product.price * product.amount }} €</span>
+                <span class="mr-4 my-auto font-weight-bold">{{ numberFormatter(product.price * product.amount) }} €</span>
               </div>
             </div>
           </div>
@@ -153,7 +153,7 @@ const getBaskeTotal = () => {
   const total = basket.value.reduce((acc, item) => {
     return acc + item.price * item.amount
   }, 0)
-  return total
+  return numberFormatter(total)
 }
 
 const updateBasket = async (product: BasketItem, newQuantity: number) => {
@@ -228,6 +228,9 @@ const pay = async () => {
   }
 }
 
+const numberFormatter = (value: number) => {
+  return value.toFixed(2)
+}
 </script>
 
 <style scoped>

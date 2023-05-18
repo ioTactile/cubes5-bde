@@ -1,8 +1,11 @@
 import * as functions from "firebase-functions";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {defineSecret} from "firebase-functions/params";
+import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {getStorage} from "firebase-admin/storage";
 import Stripe from "stripe";
 import {orderConverter, productConverter} from "./types.js";
+import QRCode from "qrcode";
+import axios from "axios";
 
 const stripePrivateKey = defineSecret("STRIPE_API_SK");
 const stripeWebhook = defineSecret("STRIPE_API_WHSEC");
@@ -28,7 +31,6 @@ export const onCompleteCheckoutSession = functions
       const stripe = new Stripe(stripePrivateKey.value(), {
         apiVersion: "2022-11-15"});
       const firestore = getFirestore();
-      //   const bucket = getStorage().bucket("gs://cubes5-bde-fbfeb.appspot.com");
 
       let event: Stripe.Event;
 
@@ -42,28 +44,36 @@ export const onCompleteCheckoutSession = functions
         throw new functions.https.HttpsError("internal", "Webhook Error", err);
       }
 
-      //   const orderUrl = `http://localhost:3000/admin/commandes/${event.data.object.id}`;
-
-      //   const qrCodeDataUrl = await QRCode.toDataURL(orderUrl);
-      //   const imageResponse = await axios.get(qrCodeDataUrl, {
-      //     responseType: "blob",
-      //   });
-      //   const qrCodeBlob = imageResponse.data;
-      //   const qrCodeRef = storage.ref(`qrcodes/${event.data.object.id}.png`);
-      //   await qrCodeRef.put(qrCodeBlob);
-
-      //   const qrCodeUrl = await qrCodeRef.getDownloadURL();
-
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
 
         const orderRef = firestore.collection("orders")
             .withConverter(orderConverter).doc(session.id);
+
+        const orderUrl = `http://localhost:3000/admin/commandes/${session.id}`;
+        const qrCodeDataUrl = await QRCode.toDataURL(orderUrl);
+        const imageResponse = await axios.get(qrCodeDataUrl, {
+          responseType: "arraybuffer",
+        });
+
+        const qrCodeBuffer = Buffer.from(imageResponse.data, "binary");
+        const bucket = getStorage().bucket();
+
+        const qrCodeFile = bucket.file(`orders/${session.id}`);
+        await qrCodeFile.save(qrCodeBuffer, {
+          contentType: "image/png",
+        });
+
+        const qrCodeUrl = await qrCodeFile.getSignedUrl({
+          action: "read",
+          expires: Date.now() + 14 * 24 * 60 * 60 * 1000,
+        }).then((urls) => urls[0]);
+
         await orderRef.update({
           paymentStatus: session.payment_status,
           status: "paid",
           updateDate: Timestamp.now(),
-        //   qrCodeUrl,
+          qrCodeUrl,
         });
 
         const products = JSON.parse(session.metadata?.products || "[]");
