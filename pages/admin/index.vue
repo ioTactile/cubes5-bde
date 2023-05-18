@@ -1,5 +1,5 @@
 <template>
-  <v-container class="text-center text-headline text-h3">
+  <v-container class="text-center text-headline text-h5 text-md-h3">
     Interface d'administration
   </v-container>
 </template>
