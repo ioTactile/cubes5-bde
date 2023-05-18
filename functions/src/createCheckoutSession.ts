@@ -1,8 +1,11 @@
 import * as functions from "firebase-functions";
 import {defineSecret} from "firebase-functions/params";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {getStorage} from "firebase-admin/storage";
 import Stripe from "stripe";
 import {BasketProduct, orderConverter, productConverter} from "./types.js";
+import QRCode from "qrcode";
+import axios from "axios";
 
 const stripePrivateKey = defineSecret("STRIPE_API_SK");
 
@@ -109,6 +112,26 @@ export const createCheckoutSession = functions
         const ordersRef = firestore.collection("orders")
             .withConverter(orderConverter);
         orderRef = ordersRef.doc();
+
+        const orderUrl = `http://localhost:3000/admin/commandes/${orderRef.id}`;
+        const qrCodeDataUrl = await QRCode.toDataURL(orderUrl);
+        const imageResponse = await axios.get(qrCodeDataUrl, {
+          responseType: "arraybuffer",
+        });
+
+        const qrCodeBuffer = Buffer.from(imageResponse.data, "binary");
+        const bucket = getStorage().bucket();
+
+        const qrCodeFile = bucket.file(`orders/${orderRef.id}`);
+        await qrCodeFile.save(qrCodeBuffer, {
+          contentType: "image/png",
+        });
+
+        const qrCodeUrl = await qrCodeFile.getSignedUrl({
+          action: "read",
+          expires: Date.now() + 14 * 24 * 60 * 60 * 1000,
+        }).then((urls) => urls[0]);
+
         await orderRef.set({
           id: orderRef.id,
           userId: context.auth.uid,
@@ -120,12 +143,13 @@ export const createCheckoutSession = functions
           products: products.map((product) => ({
             id: product.id,
             name: product.name,
-            price: (product.price || 0),
+            price: product.price || 0,
             image: product.image,
             quantity: product.quantity,
           })),
           methods: data.paymentMethod,
           status: "pending",
+          qrCodeUrl,
           creationDate: Timestamp.now(),
           updateDate: Timestamp.now(),
         });
